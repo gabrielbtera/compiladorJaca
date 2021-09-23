@@ -1,0 +1,99 @@
+classe _Laticínios filha da classe _Produtos & class _Sereais filha da classe _Produtos
+
+classe _Produtos
+início
+    var real preço;
+    var real codigo;
+
+    procedimento setPreço (real novo_preço)
+        preço := novo_preço;
+    
+    procedimento setCodigo(real codigo)
+        codigo := codigo;
+
+    função real getPreço() preço;
+
+    função real getCodigo() codigo;
+
+    
+fim
+
+
+classe _Laticínios
+início
+    const real desconto := 1,50;
+
+    procedimento setDesconto()
+    início
+    se (preço >= 5,0) preço := preço - desconto senão preço := preço - (desconto - 0,75);
+
+    fim
+
+fim
+
+
+classe _Sereais
+início
+    const real percent_desconto := 30,00;
+
+    procedimento setDesconto()
+    início
+        var real auxiliar;
+        auxiliar := (preço * 30) / 100;
+        preço := preço - auxiliar;
+    fim
+    
+fim
+
+
+classe _Principal
+início
+    objeto _ES interface;
+
+    >>> procedimento principal()
+    início
+        objeto _Produtos aux;
+        var real flag;
+        var real opçao;
+        flag := interface.lê();
+        opçao := interface.lê();
+
+        enquanto (flag != -1,0)
+        início
+            preço := interface.lê();
+            codigo := interface.lê();
+        
+            
+            se (opçao == 1,0) 
+            início
+                objeto _Laticínios laticinios;
+                laticinios.setPreço(preço);
+                laticinios.setCodigo(codigo);
+                laticinios.setDesconto();
+                aux = laticinios;
+            fim
+
+            se (opçao == 2,0)
+            início
+                objeto _Sereais s;
+                s.setPreço(preço);
+                s.setCodigo(codigo);
+                s.setDesconto();
+                aux = s;
+
+            fim
+
+            se (opçao == 2,0 ou opçao == 1,0)
+            início
+                interface.imprime(aux.getCodigo());
+                interface.imprime(ausx.getPreço());
+            fim
+            senão interface.imprime(-1,0);
+            
+
+            flag := interface.lê();
+            opçao := interface.lê();
+        fim
+    fim
+
+fim
