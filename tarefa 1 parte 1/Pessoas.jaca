@@ -1,0 +1,61 @@
+classe _Funcionário filha da classe _Pessoas & classe _Gerente filha da classe _Pessoas & classe _Cliente filha da classe _Pessoas
+
+classe _Pessoas
+início
+    
+    var real id;
+    var real CPF = 0,0;
+
+    função real getId () id;
+    
+    procedimento setId (real novo_id)
+    início 
+        id := novo_id;
+    fim
+
+    procedimento setCPF (real valor)
+    início
+        se (CPF == 0,0) 
+        início    
+            CPF := valor;
+        fim 
+    fim 
+
+    função real gerarDesconto (); 
+fim
+
+classe _Funcionário
+início
+    var real salário;
+
+    
+    função real getSalário () salário;
+    
+    procedimento setSalário (novo_salário)
+    início    
+        salário := novo_salário;
+    fim
+
+    função real gerarDesconto () 0,10; 
+
+
+fim
+
+classe _Gerente
+início
+    var real salário;
+
+    função real getSalário () salário;
+    
+    procedimento setSalário (novo_salário)
+    início    
+        salário := novo_salário;
+    fim
+
+    função real gerarDesconto () 0,20; 
+fim
+
+classe _Cliente
+início
+
+fim
