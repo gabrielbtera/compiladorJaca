@@ -1,12 +1,13 @@
-classe _Funcionário filha da classe _Pessoas & classe _Gerente filha da classe _Pessoas & classe _Cliente filha da classe _Pessoas
+classe _Funcionário filha da classe _Pessoas & classe _Gerente filha da classe _Pessoas & classe _Cliente filha da classe _Pessoas;
 
 classe _Pessoas
 início
     
     var real id;
-    var real CPF = 0,0;
+    var real CPF;
+    CPF := 0,0;
 
-    função real getId () id;
+    função real getId () id
     
     procedimento setId (real novo_id)
     início 
@@ -14,12 +15,11 @@ início
     fim
 
     procedimento setCPF (real valor)
-    início
-        se (CPF == 0,0) 
-        início    
-            CPF := valor;
-        fim 
-    fim 
+        se (CPF == 0,0) CPF := valor;
+        
+   
+    {este método abstrato e implementa 
+    polimorfismo nas classes filhas}
 
     função real gerarDesconto (); 
 fim
@@ -29,14 +29,14 @@ início
     var real salário;
 
     
-    função real getSalário () salário;
+    função real getSalário () salário
     
     procedimento setSalário (novo_salário)
-    início    
-        salário := novo_salário;
-    fim
+      salário := novo_salário;
+    
 
-    função real gerarDesconto () 0,10; 
+    # polimorfismo
+    função real gerarDesconto () 0,10 
 
 
 fim
@@ -45,14 +45,13 @@ classe _Gerente
 início
     var real salário;
 
-    função real getSalário () salário;
+    função real getSalário () salário
     
-    procedimento setSalário (novo_salário)
-    início    
+    procedimento setSalário (novo_salário)       
         salário := novo_salário;
-    fim
-
-    função real gerarDesconto () 0,20; 
+    
+    # polimorfismo
+    função real gerarDesconto () 0,20
 fim
 
 classe _Cliente

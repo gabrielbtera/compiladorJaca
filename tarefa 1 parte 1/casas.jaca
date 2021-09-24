@@ -1,0 +1,56 @@
+classe _MinhaCasaMinhaVida
+início
+    
+    var bool telhado;
+    var bool piso;
+
+    função bool getTelhado() telhado
+
+    função bool getPiso() piso
+
+    função real getMedida()
+    início
+        # bloc_exp, tivemos pequenas dúvidas aqui.
+        const real medida := 27,0;
+        (medida - 2)
+    fim
+
+    procedimento setTelhado(bool telhas)
+        telhado := telhas;
+    
+    procedimento setPiso(bool pedrasPiso)
+        piso := pedrasPiso;
+    
+
+fim
+
+classe _Principal
+início
+    objeto _ES interface;
+
+    >>> procedimento principal()
+    início
+    
+        objeto _MinhaCasaMinhaVida c;
+        var bool telhado;
+        var bool piso;
+
+        telhado := interface.lê();
+        piso := interface.lê();
+
+        
+        
+        c.setTelhado(telhado);
+        c.setPiso(piso);
+        
+
+        interface.imprime(c.getTelhado());
+        interface.imprime(c.getPiso());
+        interface.imprime(c.getMedida());
+
+
+
+
+    fim
+        
+fim

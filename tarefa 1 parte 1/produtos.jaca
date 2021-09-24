@@ -1,4 +1,4 @@
-classe _Laticínios filha da classe _Produtos & class _Sereais filha da classe _Produtos
+classe _Laticínios filha da classe _Produtos & class _Sereais filha da classe _Produtos;
 
 classe _Produtos
 início
@@ -11,9 +11,9 @@ início
     procedimento setCodigo(real codigo)
         codigo := codigo;
 
-    função real getPreço() preço;
+    função real getPreço() preço
 
-    função real getCodigo() codigo;
+    função real getCodigo() codigo
 
     
 fim
@@ -25,14 +25,14 @@ início
 
     procedimento setDesconto()
     início
-    se (preço >= 5,0) preço := preço - desconto senão preço := preço - (desconto - 0,75);
+    se (preço >= 5,0) preço := preço - desconto; senão preço := preço - (desconto - 0,75);
 
     fim
 
 fim
 
 
-classe _Sereais
+classe _Cereais
 início
     const real percent_desconto := 30,00;
 
@@ -42,7 +42,6 @@ início
         auxiliar := (preço * 30) / 100;
         preço := preço - auxiliar;
     fim
-    
 fim
 
 
@@ -55,11 +54,17 @@ início
         objeto _Produtos aux;
         var real flag;
         var real opçao;
+
+        # faz a leitura da flag
         flag := interface.lê();
-        opçao := interface.lê();
+        
 
         enquanto (flag != -1,0)
         início
+            # seleciona uma opção.
+            opçao := interface.lê();
+
+            # faz a leitura dos dados
             preço := interface.lê();
             codigo := interface.lê();
         
@@ -70,7 +75,7 @@ início
                 laticinios.setPreço(preço);
                 laticinios.setCodigo(codigo);
                 laticinios.setDesconto();
-                aux = laticinios;
+                aux := laticinios;
             fim
 
             se (opçao == 2,0)
@@ -79,20 +84,21 @@ início
                 s.setPreço(preço);
                 s.setCodigo(codigo);
                 s.setDesconto();
-                aux = s;
+                aux := s;
 
             fim
-
+            
+            # verifica se aux foi inicializada ou não.
             se (opçao == 2,0 ou opçao == 1,0)
             início
                 interface.imprime(aux.getCodigo());
-                interface.imprime(ausx.getPreço());
+                interface.imprime(aux.getPreço());
             fim
             senão interface.imprime(-1,0);
             
-
+            # deseja continuar ou não
             flag := interface.lê();
-            opçao := interface.lê();
+            
         fim
     fim
 
