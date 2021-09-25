@@ -1,4 +1,4 @@
-classe _Funcionário filha da classe _Pessoas & classe _Gerente filha da classe _Pessoas & classe _Cliente filha da classe _Pessoas;
+classe _Funcionário filha da classe _Pessoas & classe _Gerente filha da classe _Pessoas;
 
 classe _Pessoas
 início
@@ -54,7 +54,3 @@ início
     função real gerarDesconto () 0,20
 fim
 
-classe _Cliente
-início
-
-fim
