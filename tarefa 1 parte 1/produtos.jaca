@@ -1,4 +1,4 @@
-classe _Laticínios filha da classe _Produtos & class _Sereais filha da classe _Produtos;
+classe _Laticínios filha da classe _Produtos & classe _Cereais filha da classe _Produtos;
 
 classe _Produtos
 início
@@ -39,7 +39,7 @@ início
     procedimento setDesconto()
     início
         var real auxiliar;
-        auxiliar := (preço * 30) / 100;
+        auxiliar := (preço * 30,00) / 100,00;
         preço := preço - auxiliar;
     fim
 fim
@@ -59,7 +59,7 @@ início
         flag := interface.lê();
         
 
-        enquanto (flag != -1,0)
+        enquanto (!(flag == -1,0))
         início
             # seleciona uma opção.
             opçao := interface.lê();
@@ -80,11 +80,11 @@ início
 
             se (opçao == 2,0)
             início
-                objeto _Sereais s;
-                s.setPreço(preço);
-                s.setCodigo(codigo);
-                s.setDesconto();
-                aux := s;
+                objeto _Cereais c;
+                c.setPreço(preço);
+                c.setCodigo(codigo);
+                c.setDesconto();
+                aux := c;
 
             fim
             

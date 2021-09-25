@@ -12,7 +12,7 @@ início
     início
         # bloc_exp, tivemos pequenas dúvidas aqui.
         const real medida := 27,0;
-        (medida - 2)
+        (medida - 2,0)
     fim
 
     procedimento setTelhado(bool telhas)
