@@ -43,7 +43,8 @@ Tokens
  float = 'real';
  bolean = 'bool';
 
- caracteres = (underline |'@' | '$')+;
+ caracteres = (underline)+;
+ caracteres_especiais = ('@' | '$' | '+' | '-' | '^' | '`' | '~' | '%')+;
  
  familia = relacao (espaco* operador_relacao espaco* relacao)* ponto_e_virgula;
 
@@ -72,4 +73,6 @@ Tokens
 
 
 Ignored Tokens
- vazio;
+ vazio, caracteres_especiais;
+ 
+ 
