@@ -78,4 +78,31 @@ Tokens
 Ignored Tokens
  vazio, comentario;
  
+Productions
+ programa {-> programa} =
+  [esq]:familia? [dir]:lista_classe {-> New programa.a_programa(esq.familia, [dir.def_classe])};
+ lista_classe {-> def_classe*} =
+  {lista_classe} [esq]:def_classe [dir]:lista_classe {-> [esq.def_classe, dir.def_classe]} |
+  {classe} def_classe {-> [def_classe]};
+
+ familia {-> familia} =
+  {familia} lista_relacao ponto_e_virgula {-> New familia.a_lista_relacao([lista_relacao.relacao])};
+ lista_relacao {-> relacao*} =
+  {lista_relacao} [esq]:relacao operador_relacao [dir]:lista_relacao {-> [esq.relacao, dir.relacao]} |
+  {relacao} relacao {-> [relacao]};
+ relacao {-> relacao} =
+  {relacao} classe [esq]:pcid [dir]:filha_relacao {-> New relacao.a_relacao(esq.pcid, dir.relacao)};
+ filha_relacao {-> relacao} =
+  {filha_relacao} filha_da_classe pcid {-> New relacao.a_filha_relacao(pcid)};
+
+ def_classe {-> def_classe} =
+  {def_classe} classe [nome]:pcid inicio [esq]:atributos? [dir]:metodos? fim {-> New def_classe.a_def_classe(nome.pcid, [esq.dec], [dir.dec2])};
+
+ atributos {-> dec*} =
+  {atributos} [esq]:dec [dir]:atributos {-> [esq.dec, dir.dec]} |
+  {dec} dec {-> [dec]};
+ metodos {-> dec2*} =
+  {metodos} [esq]:dec2 [dir]:metodos {-> [esq.dec2, dir.dec2]} |
+  {dec} dec2 {-> [dec2]};
+ 
  
