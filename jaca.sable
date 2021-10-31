@@ -40,8 +40,8 @@ Tokens
  menor_q = '<';
  menor_igual = '<=';
  negacao = '!';
- par_esq = '(';
- par_dir = ')';
+ parenteses_esquerdo = '(';
+ parenteses_direito = ')';
  inicializacao = ':=';
  virgula = ',';
  classe = 'classe';
@@ -59,7 +59,7 @@ Tokens
  ou = 'ou';
  ponto = '.';
  filha_da_classe = 'filha da classe';
- procedimento_main = '>>>';
+ ponto_de_entrada  = '>>>';
  
  
  comentario = comentario_bloco | comentario_linha;
@@ -135,3 +135,27 @@ Productions
   {pinicializacao} [esq]:pid inicializacao [dir]:exp {-> New pinicializacao.a_pinicializacao(esq.exp, dir.exp)};
  pcid =
   {cid} cid;
+ 
+ dec2 {-> dec2} =
+  {proc} dec_procedimento {-> dec_procedimento.dec2} |
+  {func} dec_funcao {-> dec_funcao.dec2};
+ dec_procedimento {-> dec2} =
+  {dec_procedimento} ponto_de_entrada? procedimento [esq]:pid parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro], dir.comando)};
+ dec_funcao {-> dec2} =
+  {dec_funcao} funcao [esq]:tipo [esqn]:pid parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro], dir.exp)};
+ lista_parametro {-> parametro*} =
+  {lista_parametro} [esq]:parametro virgula [dir]:lista_parametro {-> [esq.parametro, dir.parametro]} |
+  {parametro} parametro {-> [parametro]};
+ parametro =
+  {parametro} tipo id;
+
+ tipo {-> tipo} =
+  {classe} tipo_classe {-> New tipo.a_tipo_classe(tipo_classe)} |
+  {primitivo} tipo_primitivo {-> New tipo.a_tipo_primtivo(tipo_primitivo)};
+ tipo_classe =
+  {tipo_classe} cid;
+ tipo_primitivo =
+  {bool} bool |
+  {real} real;
+
+  
