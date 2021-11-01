@@ -40,8 +40,8 @@ Tokens
  menor_q = '<';
  menor_igual = '<=';
  negacao = '!';
- par_esq = '(';
- par_dir = ')';
+ parenteses_esquerdo = '(';
+ parenteses_direito = ')';
  inicializacao = ':=';
  virgula = ',';
  classe = 'classe';
@@ -59,7 +59,7 @@ Tokens
  ou = 'ou';
  ponto = '.';
  filha_da_classe = 'filha da classe';
- procedimento_main = '>>>';
+ ponto_de_entrada  = '>>>';
  
  
  comentario = comentario_bloco | comentario_linha;
@@ -80,58 +80,99 @@ Ignored Tokens
  
  
 Productions
- programa {-> programa} =
-  [esq]:familia? [dir]:lista_classe {-> New programa.a_programa(esq.familia, [dir.def_classe])};
- lista_classe {-> def_classe*} =
-  {lista_classe} [esq]:def_classe [dir]:lista_classe {-> [esq.def_classe, dir.def_classe]} |
-  {classe} def_classe {-> [def_classe]};
+ programa =
+  [esq]:familia? [dir]:lista_classe;
 
- familia {-> familia} =
-  {familia} lista_relacao ponto_e_virgula {-> New familia.a_lista_relacao([lista_relacao.relacao])};
- lista_relacao {-> relacao*} =
-  {lista_relacao} [esq]:relacao operador_relacao [dir]:lista_relacao {-> [esq.relacao, dir.relacao]} |
-  {relacao} relacao {-> [relacao]};
- relacao {-> relacao} =
-  {relacao} classe [esq]:pcid [dir]:filha_relacao {-> New relacao.a_relacao(esq.pcid, dir.relacao)};
- filha_relacao {-> relacao} =
-  {filha_relacao} filha_da_classe pcid {-> New relacao.a_filha_relacao(pcid)};
+ lista_classe =
+  {lista_classe} [esq]:def_classe [dir]:lista_classe |
+  {classe} def_classe;
 
- def_classe {-> def_classe} =
-  {def_classe} classe [nome]:pcid inicio [esq]:atributos? [dir]:metodos? fim {-> New def_classe.a_def_classe(nome.pcid, [esq.dec], [dir.dec2])};
+ familia =
+  {familia} lista_relacao ponto_e_virgula;
+ 
+ lista_relacao =
+  {lista_relacao} [esq]:relacao operador_relacao [dir]:lista_relacao |
+  {relacao} relacao;
+ 
+ relacao =
+  {relacao} classe [esq]:pcid [dir]:filha_relacao;
 
- atributos {-> dec*} =
-  {atributos} [esq]:dec [dir]:atributos {-> [esq.dec, dir.dec]} |
-  {dec} dec {-> [dec]};
- metodos {-> dec2*} =
-  {metodos} [esq]:dec2 [dir]:metodos {-> [esq.dec2, dir.dec2]} |
-  {dec} dec2 {-> [dec2]};
+ filha_relacao =
+  {filha_relacao} filha_da_classe pcid;
+
+ def_classe =
+  {def_classe} classe [nome]:pcid inicio [esq]:atributos? [dir]:metodos? fim;
+
+ atributos =
+  {atributos} [esq]:dec [dir]:atributos |
+  {dec} dec;
+
+ metodos =
+  {metodos} [esq]:dec2 [dir]:metodos |
+  {dec} dec2;
   
- dec {-> dec} =
-  {obj} dec_obj {-> dec_obj.dec} |
-  {var} dec_var {-> dec_var.dec} |
-  {cons} dec_cons {-> dec_cons.dec};
- lista_decs {-> dec*} =
-  {lista_dec} [esq]:dec [dir]:lista_decs {-> [esq.dec, dir.dec]} |
-  {dec} dec {-> [dec]};
- lista_dec_cons {-> dec*} =
-  {lista_dec_cons} [esq]:dec_cons [dir]:lista_dec_cons {-> [esq.dec, dir.dec]}|
-  {dec_cons} dec_cons {-> [dec_cons.dec]};
- dec_obj {-> dec} =
-  {dec_obj} objeto [esq]:pcid [dir]:lista_id ponto_e_virgula {-> New dec.a_dec_obj(esq.pcid, [dir.exp])};
- dec_var {-> dec} =
-  {dec_var} variavel [esq]:tipo [dir]:lista_id ponto_e_virgula {-> New dec.a_dec_var(esq.tipo, [dir.exp])};
- dec_cons {-> dec} =
-  {dec_cons} constante [esq]:tipo_primitivo [dir]:lista_inicializacao+ ponto_e_virgula {-> New dec.a_dec_cons(esq.tipo_primitivo, [dir.pinicializacao])};
- lista_id {-> exp*} =
-  {lista_id} [esq]:pid virgula [dir]:lista_id {-> [esq.exp, dir.exp]} |
-  {id} pid {-> [pid.exp]};
- lista_inicializacao {-> pinicializacao*} =
-  {lista_inicializacao} [esq]:pinicializacao virgula [dir]:lista_inicializacao {-> [esq.pinicializacao, dir.pinicializacao]} |
-  {inicializacao} pinicializacao {-> [pinicializacao]};
- lista_inicializacao {-> pinicializacao*} =
-  {lista_inicializacao} [esq]:pinicializacao virgula [dir]:lista_inicializacao {-> [esq.pinicializacao, dir.pinicializacao]} |
-  {inicializacao} pinicializacao {-> [pinicializacao]};
- pinicializacao {-> pinicializacao} =
-  {pinicializacao} [esq]:pid inicializacao [dir]:exp {-> New pinicializacao.a_pinicializacao(esq.exp, dir.exp)};
+ dec =
+  {obj} dec_obj |
+  {var} dec_var |
+  {cons} dec_cons;
+  
+ lista_decs =
+  {lista_dec} [esq]:dec [dir]:lista_decs |
+  {dec} dec;
+  
+ lista_dec_cons =
+  {lista_dec_cons} [esq]:dec_cons [dir]:lista_dec_cons |
+  {dec_cons} dec_cons;
+  
+ dec_obj =
+  {dec_obj} objeto [esq]:pcid [dir]:lista_id ponto_e_virgula;
+  
+ dec_var =
+  {dec_var} variavel [esq]:tipo [dir]:lista_id ponto_e_virgula;
+  
+ dec_cons =
+  {dec_cons} constante [esq]:tipo_primitivo [dir]:lista_inicializacao+ ponto_e_virgula;
+  
+ lista_id =
+  {lista_id} [esq]:identificador virgula [dir]:lista_id |
+  {id} identificador;
+ 
+ lista_inicializacao =
+  {lista_inicializacao} [esq]:pinicializacao virgula [dir]:lista_inicializacao |
+  {inicializacao} pinicializacao;
+  
+ pinicializacao =
+  {pinicializacao} [esq]:identificador inicializacao [dir]:exp;
+  
  pcid =
   {cid} cid;
+ 
+ dec2 =
+  {proc} dec_procedimento |
+  {func} dec_funcao;
+  
+ dec_procedimento =
+  {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando;
+ 
+ dec_funcao =
+  {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp;
+ 
+ lista_parametro =
+  {lista_parametro} [esq]:parametro virgula [dir]:lista_parametro |
+  {parametro} parametro;
+ 
+ parametro =
+  {parametro} tipo id;
+
+ tipo =
+  {classe} tipo_classe |
+  {primitivo} tipo_primitivo;
+ 
+ tipo_classe =
+  {tipo_classe} cid;
+ 
+ tipo_primitivo =
+  {bool} bool |
+  {real} real;
+
+  
