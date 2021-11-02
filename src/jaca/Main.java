@@ -1,7 +1,8 @@
 package jaca;
-import calculadora.parser.*;
-import calculadora.lexer.*;
-import calculadora.node.*;
+
+import jaca.parser.*;
+import jaca.lexer.*;
+import jaca.node.*;
 import java.io.*;
 
 public class Main
@@ -10,7 +11,7 @@ public class Main
  {
   try
   {
-   String arquivo = "teste/expressao.calc";
+   String arquivo = "teste/casas.jaca";
   
    Lexer lex = new Lexer(
 		    new PushbackReader(  
