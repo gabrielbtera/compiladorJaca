@@ -199,7 +199,6 @@ Productions
  
 	exp =
 		{termo} termo |
-      	{atributo} id_ponto? atributo ponto_e_virgula |
       	{negativo} menos exp |
       	{soma} [esq]:termo soma [dir]:exp |
       	{subt} [esq]:termo menos [dir]:exp |
@@ -218,15 +217,18 @@ Productions
 		{numero} numero |
 		{verdade} verdade |
 		{falso} falso |
-		{id} identificador |
 		{parenteses} parenteses_esquerdo exp parenteses_direito |
-		{chamada} id_ponto? chamada ponto_e_virgula;
-		
-	atributo = {atributo} identificador;
+		{valor} valor;
 	
+	valor =
+		{id} identificador |
+		{atributo} id_ponto identificador |
+		{chamada} id_ponto? chamada;
+		 
+	chamada =
+		{chamada} identificador parenteses_esquerdo exp parenteses_direito;
+		
 	id_ponto = {id_ponto} identificador ponto;
 	
 	bloco_exp = {bloco_exp} inicio dec_cons* exp fim;
 			
-	chamada =
-		{chamada} identificador parenteses_esquerdo exp parenteses_direito;
