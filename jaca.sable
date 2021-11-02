@@ -66,7 +66,7 @@ Tokens
  
  id_class = id_classehelp;
 
- numero = numero_real | real_cientifico;
+ numero_pronto = numero_real | real_cientifico;
  
  
  
@@ -180,4 +180,25 @@ Productions
  bloco {-> comando} =
   {bloco} inicio [esq]:lista_decs? [dir]:lista_comandos? fim {-> New comando.a_bloco([esq.dec], [dir.comando])};
   
+ termo {-> exp} =
+  {numero} numero {-> New exp.a_numero(numero)} |
+  {booleano} booleano {-> New exp.a_booleano(booleano)} |
+  {id_call} id_call {-> id_call.exp} |
+  {par} parenteses_esquerdo exp parenteses_direito {-> exp.exp};
+  
+ numero =
+  {real} numero_pronto;
+ booleano =
+  {true} verdade |
+  {false} falso;
  
+ id_call {-> exp} =
+  {id} pid {-> pid.exp} |
+  {id_atrib} [esq]:id_ponto [dir]:pid {-> New exp.a_id_atrib(esq.exp, dir.exp)} |
+  {id_call} [esq]:id_ponto? [dir]:chamada {-> New exp.a_id_call(esq.exp, dir.exp)};
+ id_ponto {-> exp} =
+  {id_ponto} pid ponto {-> pid.exp};
+  
+ pid {-> exp} =
+  {id} identificador {-> New exp.a_id(id)};
+
