@@ -157,5 +157,27 @@ Productions
  tipo_primitivo =
   {bool} bool |
   {real} real;
-
   
+ comando {-> comando} =
+  {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando {-> New comando.a_cond(esq.exp, dir.comando)} |
+  {cond_else} se parenteses_esquerdo [esq]:exp parenteses_direito [mid]:comando_else senao [dir]:comando {-> New comando.a_cond_else(esq.exp, mid.comando, dir.comando)} |
+  {loop} enquanto parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando {-> New comando.a_loop(esq.exp, dir.comando)} |
+  {atrib} [esq]:pid inicializacao [dir]:exp ponto_e_virgula {-> New comando.a_atrib(esq.exp, dir.exp)} |
+  {call} [esq]:id_ponto? [dir]:chamada ponto_e_virgula {-> New comando.a_call(esq.exp, dir.exp)} |
+  {bloco} bloco {-> bloco.comando};
+ comando_else {-> comando} =
+  {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [mid]:comando_else [dir]:cont_comando_else {-> New comando.a_cont_cond_else(esq.exp, mid.comando, dir.comando)} |
+  {loop} enquanto parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando_else {-> New comando.a_loop_else(esq.exp, dir.comando)} |
+  {atrib} [esq]:pid inicializacao [dir]:exp ponto_virgula {-> New comando.a_atrib_else(esq.exp, dir.exp)} |
+  {call} [esq]:id_ponto? [dir]:chamada ponto_e_virgula {-> New comando.a_call_else(esq.exp, dir.exp)} |
+  {bloco} bloco {-> bloco.comando};
+ cont_comando_else {-> comando} =
+  {cont_cond} senao comando_else {-> comando_else.comando};
+ lista_comandos {-> comando*} =
+  {lista_comandos} [esq]:comando [dir]:lista_comandos {-> [esq.comando, dir.comando]} |
+  {comando} comando {-> [comando]};
+  
+ bloco {-> comando} =
+  {bloco} inicio [esq]:lista_decs? [dir]:lista_comandos? fim {-> New comando.a_bloco([esq.dec], [dir.comando])};
+  
+ 
