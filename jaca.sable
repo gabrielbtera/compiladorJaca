@@ -48,6 +48,7 @@ Tokens
  objeto = 'objeto';
  variavel = 'var';
  constante = 'const';
+ barra = '|';
  
  procedimento = 'procedimento';
  inicio = 'in'237'cio';
@@ -201,4 +202,15 @@ Productions
   
  pid {-> exp} =
   {id} identificador {-> New exp.a_id(id)};
+  
+  
+ bloco_exp {-> exp} =
+  {bloco_exp} inicio [esq]:lista_dec_cons? [dir]:exp fim {-> New exp.a_bloco_exp([esq.dec], dir.exp)};
 
+ chamada {-> exp} =
+  {chamada} [esq]:pid parenteses_esquerdo [dir]:lista_exp? parenteses_direito {-> New exp.a_chamada(esq.exp, [dir.exp])};
+ lista_exp {-> exp*} =
+  {lista_exp} [esq]:exp barra [dir]:lista_exp {-> [esq.exp, dir.exp]} |
+  {exp} exp {-> [exp]};
+ 
+  
