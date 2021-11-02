@@ -24,53 +24,50 @@ Helpers
  real_cientifico = digito (',' numero_inteiro)? ('e' | 'E') '-'? numero_inteiro;
 
 Tokens
- funcao = 'fun'231 227 'o';
- operador_relacao = '&';
- ponto_e_virgula = ';';
- real = 'real';
- boleano = 'bool';
- verdade = 'verdade';
- falso = 'falso';
- soma = '+';
- menos = '-';
- mult = '*';
- div = '/';
- mod = '%';
- igual = '==';
- menor_q = '<';
- menor_igual = '<=';
- negacao = '!';
- parenteses_esquerdo = '(';
- parenteses_direito = ')';
- inicializacao = ':=';
- virgula = ',';
- classe = 'classe';
- objeto = 'objeto';
- variavel = 'var';
- constante = 'const';
+	funcao = 'fun'231 227 'o';
+	operador_relacao = '&';
+	ponto_e_virgula = ';';
+	real = 'real';
+	boleano = 'bool';
+	verdade = 'verdade';
+	falso = 'falso';
+	soma = '+';
+	menos = '-';
+	mult = '*';
+	div = '/';
+	mod = '%';
+	igual = '==';
+	menor_q = '<';
+	menor_igual = '<=';
+	negacao = '!';
+	parenteses_esquerdo = '(';
+	parenteses_direito = ')';
+	inicializacao = ':=';
+	virgula = ',';
+	classe = 'classe';
+	objeto = 'objeto';
+	variavel = 'var';
+	constante = 'const';
  
- procedimento = 'procedimento';
- inicio = 'in'237'cio';
- fim = 'fim';
- se = 'se';
- senao = 'sen'227'o';
- enquanto = 'enquanto';
- e = 'e';
- ou = 'ou';
- ponto = '.';
- filha_da_classe = 'filha da classe';
- ponto_de_entrada  = '>>>';
+	procedimento = 'procedimento';
+	inicio = 'in'237'cio';
+	fim = 'fim';
+	se = 'se';
+	senao = 'sen'227'o';
+	enquanto = 'enquanto';
+	e = 'e';
+	ou = 'ou';
+	ponto = '.';
+	filha_da_classe = 'filha da classe';
+	ponto_de_entrada  = '>>>';
  
+ 	comentario = comentario_bloco | comentario_linha;
  
- comentario = comentario_bloco | comentario_linha;
- 
- id_class = id_classehelp;
+	id_class = id_classehelp;
+ 	identificador = (letra_maiuscula | letra_minuscula)+ | (letra_minuscula | letra_maiuscula)+ | identificador_pronto;
 
- numero = numero_real | real_cientifico;
+ 	numero = numero_real | real_cientifico;
  
- 
- 
- identificador = (letra_maiuscula | letra_minuscula)+ | (letra_minuscula | letra_maiuscula)+ | identificador_pronto;
  
  vazio = (espaco | rc | nl)+;
 
@@ -95,13 +92,13 @@ Productions
   {relacao} relacao;
  
  relacao =
-  {relacao} classe [esq]:pcid [dir]:filha_relacao;
+  {relacao} classe [esq]:pid_class [dir]:filha_relacao;
 
  filha_relacao =
-  {filha_relacao} filha_da_classe pcid;
+  {filha_relacao} filha_da_classe pid_class;
 
  def_classe =
-  {def_classe} classe [nome]:pcid inicio [esq]:atributos? [dir]:metodos? fim;
+  {def_classe} classe [nome]:pid_class inicio [esq]:atributos? [dir]:metodos? fim;
 
  atributos =
   {atributos} [esq]:dec [dir]:atributos |
@@ -125,7 +122,7 @@ Productions
   {dec_cons} dec_cons;
   
  dec_obj =
-  {dec_obj} objeto [esq]:pcid [dir]:lista_id ponto_e_virgula;
+  {dec_obj} objeto [esq]:pid_class [dir]:lista_id ponto_e_virgula;
   
  dec_var =
   {dec_var} variavel [esq]:tipo [dir]:lista_id ponto_e_virgula;
@@ -144,8 +141,8 @@ Productions
  pinicializacao =
   {pinicializacao} [esq]:identificador inicializacao [dir]:exp;
   
- pcid =
-  {cid} cid;
+ pid_class =
+  {id_class} id_class;
  
  dec2 =
   {proc} dec_procedimento |
@@ -153,6 +150,7 @@ Productions
   
  dec_procedimento =
   {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando;
+ 
  
  dec_funcao =
   {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp;
@@ -162,17 +160,73 @@ Productions
   {parametro} parametro;
  
  parametro =
-  {parametro} tipo id;
+  {parametro} tipo identificador;
 
  tipo =
   {classe} tipo_classe |
   {primitivo} tipo_primitivo;
  
  tipo_classe =
-  {tipo_classe} cid;
+  {tipo_classe} id_class;
  
- tipo_primitivo =
-  {bool} bool |
-  {real} real;
+	tipo_primitivo =
+    	{bool} boleano |
+  		{real} real;
 
+ comando =
+  {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando |
+  {cond_else} se parenteses_esquerdo [esq]:exp parenteses_direito [mid]:comando_else senao [dir]:comando |
+  {loop} enquanto parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando |
+  {atrib} [esq]:identificador inicializacao [dir]:exp ponto_e_virgula |
+  {call} [esq]:id_ponto? [dir]:chamada ponto_e_virgula |
+  {bloco} bloco;
+ 
+ comando_else =
+  {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [mid]:comando_else [dir]:cont_comando_else |
+  {loop} enquanto parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando_else |
+  {atrib} [esq]:identificador inicializacao [dir]:exp ponto_e_virgula |
+  {call} [esq]:id_ponto? [dir]:chamada ponto_e_virgula |
+  {bloco} bloco;
+ 
+ cont_comando_else =
+  {cont_cond} senao comando_else;
+ 
+ lista_comandos =
+  {lista_comandos} [esq]:comando [dir]:lista_comandos |
+  {comando} comando;
   
+ bloco = {bloco} inicio dec* comando* fim;
+ 
+	exp =
+		{termo} termo |
+      	{atributo} id_ponto? atributo ponto_e_virgula |
+      	{negativo} menos exp |
+      	{soma} [esq]:termo soma [dir]:exp |
+      	{subt} [esq]:termo menos [dir]:exp |
+      	{multi} [esq]:termo mult [dir]:exp |
+      	{div} [esq]:termo div [dir]:exp |
+      	{mod} [esq]:termo mod [dir]:exp |
+      	{igual} [esq]:termo igual [dir]:exp |
+      	{menor} [esq]:termo menor_q [dir]:exp |
+      	{menorig} [esq]:termo menor_igual [dir]:exp |
+      	{negac} negacao exp |
+      	{and} [esq]:termo e [dir]:exp |
+      	{or} [esq]:termo ou [dir]:exp |
+      	{bloco_exp} bloco_exp;
+	
+	termo = 
+		{numero} numero |
+		{verdade} verdade |
+		{falso} falso |
+		{id} identificador |
+		{parenteses} parenteses_esquerdo exp parenteses_direito |
+		{chamada} id_ponto? chamada ponto_e_virgula;
+		
+	atributo = {atributo} identificador;
+	
+	id_ponto = {id_ponto} identificador ponto;
+	
+	bloco_exp = {bloco_exp} inicio dec_cons* exp fim;
+			
+	chamada =
+		{chamada} identificador parenteses_esquerdo exp parenteses_direito;
