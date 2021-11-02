@@ -1,4 +1,4 @@
-Package calculadora;
+Package jaca;
 
 Helpers
  digito = ['0' .. '9'];
