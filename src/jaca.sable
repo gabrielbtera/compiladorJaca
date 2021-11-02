@@ -60,7 +60,7 @@ Tokens
 	ponto = '.';
 	filha_da_classe = 'filha da classe';
 	ponto_de_entrada  = '>>>';
- 
+ 	separador = '|';
  	comentario = comentario_bloco | comentario_linha;
  
 	id_class = id_classehelp;
@@ -226,9 +226,14 @@ Productions
 		{chamada} id_ponto? chamada;
 		 
 	chamada =
-		{chamada} identificador parenteses_esquerdo exp parenteses_direito;
+		{chamada} identificador parenteses_esquerdo exp? parenteses_direito;
 		
-	id_ponto = {id_ponto} identificador ponto;
+	id_ponto = 
+		{id_ponto} identificador ponto;
 	
-	bloco_exp = {bloco_exp} inicio dec_cons* exp fim;
-			
+	bloco_exp = 
+		{bloco_exp} inicio dec_cons* exp fim;
+	
+	lista_exp =
+		{lista_exp} exp separador lista_exp |
+		{exp} exp;

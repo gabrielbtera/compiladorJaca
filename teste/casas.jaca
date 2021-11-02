@@ -1,16 +1,16 @@
 classe _MinhaCasaMinhaVida
-inÃ­cio
+início
     
     var bool telhado;
     var bool piso;
 
-    funÃ§Ã£o bool getTelhado() telhado
+    função bool getTelhado() telhado
 
-    funÃ§Ã£o bool getPiso() piso
+    função bool getPiso() piso
 
-    funÃ§Ã£o real getMedida()
-    inÃ­cio
-        # bloc_exp, tivemos pequenas dÃºvidas aqui.
+    função real getMedida()
+    início
+        # bloc_exp, tivemos pequenas dúvidas aqui.
         const real medida := 27,0;
         (medida - 2,0)
     fim
@@ -25,18 +25,18 @@ inÃ­cio
 fim
 
 classe _Principal
-inÃ­cio
+início
     objeto _ES interface;
 
     >>> procedimento principal()
-    inÃ­cio
+    início
     
         objeto _MinhaCasaMinhaVida c;
         var bool telhado;
         var bool piso;
 
-        telhado := interface.lÃª();
-        piso := interface.lÃª();
+        telhado := interface.lê();
+        piso := interface.lê();
 
         
         
