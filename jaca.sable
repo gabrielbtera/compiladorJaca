@@ -156,7 +156,7 @@ Productions
   {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp;
  
  lista_parametro =
-  {lista_parametro} [esq]:parametro virgula [dir]:lista_parametro |
+  {lista_parametro} [esq]:parametro separador [dir]:lista_parametro |
   {parametro} parametro;
  
  parametro =
@@ -226,7 +226,7 @@ Productions
 		{chamada} id_ponto? chamada;
 		 
 	chamada =
-		{chamada} identificador parenteses_esquerdo exp? parenteses_direito;
+		{chamada} identificador parenteses_esquerdo lista_exp? parenteses_direito;
 		
 	id_ponto = 
 		{id_ponto} identificador ponto;
