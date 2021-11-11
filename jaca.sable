@@ -1,50 +1,52 @@
 Package jaca;
 
+
 Helpers
- digito = ['0' .. '9'];
- underline = '_';
- 
- letra_minuscula =  (['a' .. 'z'] | [224 .. 227] | [233 .. 234] | 237 | [243 .. 245] | 250 | 231);
- letra_maiuscula = (['A' .. 'Z'] | [192 .. 195] | [201 .. 202] | [211 .. 213] | 218 | 199);
+  digito = ['0' .. '9'];
+  underline = '_';
 
- identificador_undermeio = (letra_maiuscula | underline | letra_minuscula)+ | (letra_minuscula | underline | letra_maiuscula)+;
- identificador_underfim = (letra_maiuscula | letra_minuscula | underline)+ | ( letra_minuscula | letra_maiuscula | underline)+;
- identificador_pronto = identificador_undermeio | identificador_underfim;
- 
- id_classehelp =  underline (letra_maiuscula | letra_minuscula)+ | underline (letra_minuscula | letra_maiuscula)+;
+  letra_minuscula =  (['a' .. 'z'] | [224 .. 227] | [233 .. 234] | 237 | [243 .. 245] | 250 | 231);
+  letra_maiuscula = (['A' .. 'Z'] | [192 .. 195] | [201 .. 202] | [211 .. 213] | 218 | 199);
 
- espaco = ' ';
- rc = 13;
- nl = 10;
- comentario_bloco = '{'([32..124] | 126 | [128..254] | (10 | 13 | 10 13))*'}';
- comentario_linha = '#'([32..126] | [128..254])* (10 | 13 | 10 13);
- 
- numero_inteiro = digito+;
- numero_real = numero_inteiro ',' numero_inteiro;
- real_cientifico = digito (',' numero_inteiro)? ('e' | 'E') '-'? numero_inteiro;
+  identificador_undermeio = (letra_maiuscula | underline | letra_minuscula)+ | (letra_minuscula | underline | letra_maiuscula)+;
+  identificador_underfim = (letra_maiuscula | letra_minuscula | underline)+ | ( letra_minuscula | letra_maiuscula | underline)+;
+  identificador_pronto = identificador_undermeio | identificador_underfim;
+
+  id_classehelp =  underline (letra_maiuscula | letra_minuscula)+ | underline (letra_minuscula | letra_maiuscula)+;
+
+  espaco = ' ';
+  rc = 13;
+  nl = 10;
+  comentario_bloco = '{'([32..124] | 126 | [128..254] | (10 | 13 | 10 13))*'}';
+  comentario_linha = '#'([32..126] | [128..254])* (10 | 13 | 10 13);
+
+  numero_inteiro = digito+;
+  numero_real = numero_inteiro ',' numero_inteiro;
+  real_cientifico = digito (',' numero_inteiro)? ('e' | 'E') '-'? numero_inteiro;
+
 
 Tokens
-	funcao = 'fun'231 227 'o';
-	operador_relacao = '&';
-	ponto_e_virgula = ';';
-	real = 'real';
-	boleano = 'bool';
-	verdade = 'verdade';
-	falso = 'falso';
-	soma = '+';
-	menos = '-';
-	mult = '*';
-	div = '/';
-	mod = '%';
-	igual = '==';
-	menor_q = '<';
-	menor_igual = '<=';
-	negacao = '!';
-	parenteses_esquerdo = '(';
-	parenteses_direito = ')';
-	inicializacao = ':=';
-	virgula = ',';
-	classe = 'classe';
+  funcao = 'fun'231 227 'o';
+  operador_relacao = '&';
+  ponto_e_virgula = ';';
+  real = 'real';
+  boleano = 'bool';
+  verdade = 'verdade';
+  falso = 'falso';
+  soma = '+';
+  menos = '-';
+  mult = '*';
+  div = '/';
+  mod = '%';
+  igual = '==';
+  menor_q = '<';
+  menor_igual = '<=';
+  negacao = '!';
+  parenteses_esquerdo = '(';
+  parenteses_direito = ')';
+  inicializacao = ':=';
+  virgula = ',';
+  classe = 'classe';
 	objeto = 'objeto';
 	variavel = 'var';
 	constante = 'const';
@@ -68,28 +70,27 @@ Tokens
 
  	numero = numero_real | real_cientifico;
  
- 
- vazio = (espaco | rc | nl)+;
+  vazio = (espaco | rc | nl)+; 
 
 
 Ignored Tokens
- vazio, comentario;
+  vazio, comentario;
  
  
 Productions
- programa {-> programa} =
-  [esq]:familia? [dir]:lista_classe {-> New programa.a_programa(esq.familia, [dir.def_classe])};
+  programa {-> programa} =
+    [esq]:familia? [dir]:lista_classe {-> New programa.a_programa(esq.familia, [dir.def_classe])};
 
- lista_classe {-> def_classe*} =
-  {lista_classe} [esq]:def_classe [dir]:lista_classe {-> [esq.def_classe, dir.def_classe]} |
-  {classe} def_classe {-> [def_classe]};
+  lista_classe {-> def_classe*} =
+    {lista_classe} [esq]:def_classe [dir]:lista_classe {-> [esq.def_classe, dir.def_classe]} |
+    {classe} def_classe {-> [def_classe]};
 
- familia {-> familia} =
-  {familia} lista_relacao ponto_e_virgula {-> New familia.a_lista_relacao([lista_relacao.relacao])};
+  familia {-> familia} =
+    {familia} lista_relacao ponto_e_virgula {-> New familia.a_lista_relacao([lista_relacao.relacao])};
  
- lista_relacao {-> relacao*} =
-  {lista_relacao} [esq]:relacao operador_relacao [dir]:lista_relacao {-> [esq.relacao, dir.relacao]} |
-  {relacao} relacao {-> [relacao]};
+  lista_relacao {-> relacao*} =
+    {lista_relacao} [esq]:relacao operador_relacao [dir]:lista_relacao {-> [esq.relacao, dir.relacao]} |
+    {relacao} relacao {-> [relacao]};
  
  relacao {-> relacao} =
   {relacao} classe [esq]:pid_class [dir]:filha_relacao {-> New relacao.a_relacao(esq.pcid, dir.relacao)};
@@ -152,15 +153,10 @@ Productions
   {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro], dir.comando)}|
   {dec_procedimento_com} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro], dir.comando)};
  
- 
- 
  dec_funcao {-> dec2} =
   {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro], dir.exp)} |
   {dec_funcao_com} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro], dir.exp)};
  
- 
- 
-
  lista_parametro {-> parametro*} =
   {lista_parametro} [esq]:parametro separador [dir]:lista_parametro {-> [esq.parametro, dir.parametro]}|
   {parametro} parametro {-> [parametro]};
@@ -197,33 +193,33 @@ Productions
  cont_comando_else  {-> comando}=
   {cont_cond} senao comando_else {-> comando_else.comando};
  
- lista_comandos  {-> comando*} =
-  {lista_comandos} [esq]:comando [dir]:lista_comandos {-> [esq.comando, dir.comando]} |
-  {comando} comando {-> [comando]};
+  lista_comandos  {-> comando*} =
+    {lista_comandos} [esq]:comando [dir]:lista_comandos {-> [esq.comando, dir.comando]} |
+    {comando} comando {-> [comando]};
   
- bloco = {bloco} inicio dec* comando* fim  {-> New comando.a_bloco([esq.dec], [dir.comando])};
+    bloco = {bloco} inicio dec* comando* fim  {-> New comando.a_bloco([esq.dec], [dir.comando])};
  
-	exp =
-		{termo} termo |
-      	{negativo} menos exp |
-      	{soma} [esq]:termo soma [dir]:exp |
-      	{subt} [esq]:termo menos [dir]:exp |
-      	{multi} [esq]:termo mult [dir]:exp |
-      	{div} [esq]:termo div [dir]:exp |
-      	{mod} [esq]:termo mod [dir]:exp |
-      	{igual} [esq]:termo igual [dir]:exp |
-      	{menor} [esq]:termo menor_q [dir]:exp |
-      	{menorig} [esq]:termo menor_igual [dir]:exp |
-      	{negac} negacao exp |
-      	{and} [esq]:termo e [dir]:exp |
-      	{or} [esq]:termo ou [dir]:exp |
-      	{bloco_exp} bloco_exp;
+	exp {-> exp} =
+		{termo} termo {-> termo.exp} |
+    {negativo} menos exp {-> New exp.a_negativo(exp)} |
+    {soma} [esq]:termo soma [dir]:exp {-> New exp.a_soma(esq.exp, dir.exp)}|
+    {subt} [esq]:termo menos [dir]:exp {-> New exp.a_subt(esq.exp, dir.exp)} |
+    {multi} [esq]:termo mult [dir]:exp {-> New exp.a_multi(esq.exp, dir.exp)} |
+    {div} [esq]:termo div [dir]:exp {-> New exp.a_div(esq.exp, dir.exp)} |
+    {mod} [esq]:termo mod [dir]:exp {-> New exp.a_mod(esq.exp, dir.exp)} |
+    {igual} [esq]:termo igual [dir]:exp {-> New exp.a_igual(esq.exp, dir.exp)} |
+    {menor} [esq]:termo menor_q [dir]:exp {-> New exp.a_menor(esq.exp, dir.exp)} |
+    {menorig} [esq]:termo menor_igual [dir]:exp {-> New exp.a_menor_igual(esq.exp, dir.exp)}|
+    {negacao} negacao exp {-> New exp.a_negacao(exp)} |
+    {and} [esq]:termo e [dir]:exp {New -> exp.a_and(esq.exp, dir.exp)} | 
+    {or} [esq]:termo ou [dir]:exp {New -> exp.a_or(esq.exp, dir.exp)} |
+    {bloco_exp} bloco_exp;
 	
-	termo = 
-		{numero} numero |
-		{verdade} verdade |
-		{falso} falso |
-		{parenteses} parenteses_esquerdo exp parenteses_direito |
+	termo {-> exp} = 
+		{numero} numero {-> New exp.a_numero(numero)} |
+		{verdade} verdade {-> New exp.a_true(verdade)} |
+		{falso} falso {-> New exp.a_false(falso)}|
+		{parenteses} parenteses_esquerdo exp parenteses_direito {-> exp.exp} |
 		{valor} valor;
 	
 	valor =
@@ -231,11 +227,11 @@ Productions
 		{atributo} id_ponto identificador |
 		{chamada} id_ponto? chamada;
 		 
-	chamada =
-		{chamada} identificador parenteses_esquerdo lista_exp? parenteses_direito;
+	chamada {-> exp} =
+		{chamada} identificador parenteses_esquerdo lista_exp? parenteses_direito {-> New exp.a_chamada(identificador.exp, [lista_exp.exp])};
 		
-	id_ponto = 
-		{id_ponto} identificador ponto;
+	id_ponto {-> exp} = 
+		{id_ponto} identificador ponto {-> New exp.a_id(identificador)};
 	
 	bloco_exp = 
 		{bloco_exp} inicio dec_cons* exp fim;
@@ -243,6 +239,7 @@ Productions
 	lista_exp =
 		{lista_exp} exp separador lista_exp |
 		{exp} exp;
+
 
 Abstract Syntax Tree
     programa =
@@ -282,17 +279,17 @@ Abstract Syntax Tree
       {bool} bool |
       {real} real;
 
-    comando =
-      {a_cond} [esq]:exp [dir]:comando |
-      {a_cond_else} [esq]:exp [mid]:comando [dir]:comando |
-      {a_cont_cond_else} [esq]:exp [mid]:comando [dir]:comando |
-      {a_loop} [esq]:exp [dir]:comando |
-      {a_atrib} [esq]:exp [dir]:exp |
-      {a_call} [esq]:exp? [dir]:exp |
-      {a_bloco} [esq]:dec* [dir]:comando* |
-      {a_loop_else} [esq]:exp [dir]:comando |
-      {a_atrib_else} [esq]:exp [dir]:exp |
-      {a_call_else} [esq]:exp? [dir]:exp;
+  comando =
+    {a_cond} [esq]:exp [dir]:comando |
+    {a_cond_else} [esq]:exp [mid]:comando [dir]:comando |
+    {a_cont_cond_else} [esq]:exp [mid]:comando [dir]:comando |
+    {a_loop} [esq]:exp [dir]:comando |
+    {a_atrib} [esq]:exp [dir]:exp |
+    {a_call} [esq]:exp? [dir]:exp |
+    {a_bloco} [esq]:dec* [dir]:comando* |
+    {a_loop_else} [esq]:exp [dir]:comando |
+    {a_atrib_else} [esq]:exp [dir]:exp |
+    {a_call_else} [esq]:exp? [dir]:exp;
 
 	exp =
       {a_se_cond} [esq]:exp [dir]:exp |
@@ -305,23 +302,16 @@ Abstract Syntax Tree
       {a_mod} [esq]:exp [dir]:exp |
       {a_igual} [esq]:exp [dir]:exp |
       {a_menor} [esq]:exp [dir]:exp |
+      {a_menor_igual} [esq]:exp [dir]:exp |
       {a_bloco_exp} [esq]:dec* [dir]:exp |
       {a_negativo} exp |
-      {a_dif} exp |
+      {a_negacao} exp |
       {a_and} [esq]:exp [dir]:exp |
       {a_or} [esq]:exp [dir]:exp |
-      {a_id} id |
+      {a_id} identificador |
       {a_id_atrib} [esq]:exp? [dir]:exp |
       {a_id_call} [esq]:exp? [dir]:exp |
       {a_chamada} [esq]:exp [dir]:exp* |
       {a_numero} numero |
-      {a_booleano} booleano;
-    id_ponto =
-      {a_id_ponto} exp;
-
-    numero =
-      {inteiro} numero_inteiro |
-      {real} numero_real;
-    booleano =
-      {true} true |
-      {false} false;
+      {a_true} verdade |
+      {a_false} falso;
