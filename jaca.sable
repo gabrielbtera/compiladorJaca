@@ -144,33 +144,33 @@ Productions
  pid_class =
   {id_class} id_class;
  
- dec2 =
-  {proc} dec_procedimento |
-  {func} dec_funcao;
+ dec2 {-> dec2} =
+  {proc} dec_procedimento {-> dec_procedimento.dec2} |
+  {func} dec_funcao {-> dec_funcao.dec2};
   
- dec_procedimento =
-  {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula |
-  {dec_procedimento_com} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando;
+ dec_procedimento {-> dec2} =
+  {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro], dir.comando)}|
+  {dec_procedimento_com} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro], dir.comando)};
  
  
  
- dec_funcao =
-  {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula |
-  {dec_funcao_com} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp;
+ dec_funcao {-> dec2} =
+  {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro], dir.exp)} |
+  {dec_funcao_com} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro], dir.exp)};
  
  
  
 
- lista_parametro =
-  {lista_parametro} [esq]:parametro separador [dir]:lista_parametro |
-  {parametro} parametro;
+ lista_parametro {-> parametro*} =
+  {lista_parametro} [esq]:parametro separador [dir]:lista_parametro {-> [esq.parametro, dir.parametro]}|
+  {parametro} parametro {-> [parametro]};
  
  parametro =
   {parametro} tipo identificador;
 
- tipo =
-  {classe} tipo_classe |
-  {primitivo} tipo_primitivo;
+ tipo {-> tipo} =
+  {classe} tipo_classe {-> New tipo.a_tipo_classe(tipo_classe)} |
+  {primitivo} tipo_primitivo {-> New tipo.a_tipo_primtivo(tipo_primitivo)};
  
  tipo_classe =
   {tipo_classe} id_class;
@@ -179,29 +179,29 @@ Productions
     	{bool} boleano |
   		{real} real;
 
- comando =
-  {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando |
-  {cond_else} se parenteses_esquerdo [esq]:exp parenteses_direito [mid]:comando_else senao [dir]:comando |
-  {loop} enquanto parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando |
-  {atrib} [esq]:identificador inicializacao [dir]:exp ponto_e_virgula |
-  {call} [esq]:id_ponto? [dir]:chamada ponto_e_virgula |
-  {bloco} bloco;
+ comando {-> comando} =
+  {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando {-> New comando.a_cond(esq.exp, dir.comando)}|
+  {cond_else} se parenteses_esquerdo [esq]:exp parenteses_direito [mid]:comando_else senao [dir]:comando {-> New comando.a_cond_else(esq.exp, mid.comando, dir.comando)} |
+  {loop} enquanto parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando {-> New comando.a_loop(esq.exp, dir.comando)}|
+  {atrib} [esq]:identificador inicializacao [dir]:exp ponto_e_virgula  {-> New comando.a_atrib(esq.exp, dir.exp)}|
+  {call} [esq]:id_ponto? [dir]:chamada ponto_e_virgula {-> New comando.a_call(esq.exp, dir.exp)} |
+  {bloco} bloco {-> bloco.comando};
  
- comando_else =
-  {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [mid]:comando_else [dir]:cont_comando_else |
-  {loop} enquanto parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando_else |
-  {atrib} [esq]:identificador inicializacao [dir]:exp ponto_e_virgula |
-  {call} [esq]:id_ponto? [dir]:chamada ponto_e_virgula |
-  {bloco} bloco;
+ comando_else {-> comando} =
+  {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [mid]:comando_else [dir]:cont_comando_else {-> New comando.a_cont_cond_else(esq.exp, mid.comando, dir.comando)}|
+  {loop} enquanto parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando_else {-> New comando.a_loop_else(esq.exp, dir.comando)}|
+  {atrib} [esq]:identificador inicializacao [dir]:exp ponto_e_virgula {-> New comando.a_atrib_else(esq.exp, dir.exp)} |
+  {call} [esq]:id_ponto? [dir]:chamada ponto_e_virgula {-> New comando.a_call_else(esq.exp, dir.exp)} |
+  {bloco} bloco {-> bloco.comando};
  
- cont_comando_else =
-  {cont_cond} senao comando_else;
+ cont_comando_else  {-> comando}=
+  {cont_cond} senao comando_else {-> comando_else.comando};
  
- lista_comandos =
-  {lista_comandos} [esq]:comando [dir]:lista_comandos |
-  {comando} comando;
+ lista_comandos  {-> comando*} =
+  {lista_comandos} [esq]:comando [dir]:lista_comandos {-> [esq.comando, dir.comando]} |
+  {comando} comando {-> [comando]};
   
- bloco = {bloco} inicio dec* comando* fim;
+ bloco = {bloco} inicio dec* comando* fim  {-> New comando.a_bloco([esq.dec], [dir.comando])};
  
 	exp =
 		{termo} termo |
