@@ -149,12 +149,18 @@ Productions
   {func} dec_funcao;
   
  dec_procedimento =
-  {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando;
+  {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula |
+  {dec_procedimento_com} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando;
+ 
  
  
  dec_funcao =
-  {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp;
+  {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula |
+  {dec_funcao_com} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp;
  
+ 
+ 
+
  lista_parametro =
   {lista_parametro} [esq]:parametro separador [dir]:lista_parametro |
   {parametro} parametro;
