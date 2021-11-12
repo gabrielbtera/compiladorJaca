@@ -150,11 +150,11 @@ Productions
   {func} dec_funcao {-> dec_funcao.dec2};
   
  dec_procedimento {-> dec2} =
-  {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro], dir.comando)}|
+  {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro])}|
   {dec_procedimento_com} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro], dir.comando)};
  
  dec_funcao {-> dec2} =
-  {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro], dir.exp)} |
+  {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro])} |
   {dec_funcao_com} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro], dir.exp)};
  
  lista_parametro {-> parametro*} =
@@ -220,15 +220,16 @@ Productions
 		{verdade} verdade {-> New exp.a_true(verdade)} |
 		{falso} falso {-> New exp.a_false(falso)}|
 		{parenteses} parenteses_esquerdo exp parenteses_direito {-> exp.exp} |
-		{valor} valor;
+		{valor} valor {-> valor.exp};
 	
-	valor =
-		{id} identificador |
-		{atributo} id_ponto identificador |
-		{chamada} id_ponto? chamada;
+	valor {-> exp} =
+		{id} identificador {-> New exp.a_id(identificador)} |
+		{atributo} [esq]:id_ponto [dir]:identificador {-> New exp.a_id_atrib(esq.exp, dir.exp)} |
+		{chamada} [esq]:id_ponto? [dir]:chamada {-> New exp.a_id_call(esq.exp, dir.exp)};
 		 
 	chamada {-> exp} =
-		{chamada} identificador parenteses_esquerdo lista_exp? parenteses_direito {-> New exp.a_chamada(identificador.exp, [lista_exp.exp])};
+		{chamada} identificador parenteses_esquerdo lista_exp? parenteses_direito |
+    {-> New exp.a_chamada(identificador.exp, [lista_exp.exp])};
 		
 	id_ponto {-> exp} = 
 		{id_ponto} identificador ponto {-> New exp.a_id(identificador)};
