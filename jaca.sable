@@ -233,12 +233,12 @@ Productions
 	id_ponto {-> exp} = 
 		{id_ponto} identificador ponto {-> New exp.a_id(identificador)};
 	
-	bloco_exp = 
-		{bloco_exp} inicio dec_cons* exp fim;
+	bloco_exp {-> exp} = 
+		{bloco_exp} inicio dec_cons* exp fim {-> New exp.a_bloco_exp([esq.dec], dir.exp)};
 	
-	lista_exp =
-		{lista_exp} exp separador lista_exp |
-		{exp} exp;
+	lista_exp {-> exp*} =
+		{lista_exp} exp separador lista_exp  {-> [esq.exp, dir.exp]} |
+		{exp} exp {-> [exp]};
 
 
 Abstract Syntax Tree
