@@ -220,15 +220,16 @@ Productions
 		{verdade} verdade {-> New exp.a_true(verdade)} |
 		{falso} falso {-> New exp.a_false(falso)}|
 		{parenteses} parenteses_esquerdo exp parenteses_direito {-> exp.exp} |
-		{valor} valor;
+		{valor} valor {-> valor.exp};
 	
-	valor =
-		{id} identificador |
-		{atributo} id_ponto identificador |
-		{chamada} id_ponto? chamada;
+	valor {-> exp} =
+		{id} identificador {-> New exp.a_id(identificador)} |
+		{atributo} [esq]:id_ponto [dir]:identificador {-> New exp.a_id_atrib(esq.exp, dir.exp)} |
+		{chamada} [esq]:id_ponto? [dir]:chamada {-> New exp.a_id_call(esq.exp, dir.exp)};
 		 
 	chamada {-> exp} =
-		{chamada} identificador parenteses_esquerdo lista_exp? parenteses_direito {-> New exp.a_chamada(identificador.exp, [lista_exp.exp])};
+		{chamada} identificador parenteses_esquerdo lista_exp? parenteses_direito |
+    {-> New exp.a_chamada(identificador.exp, [lista_exp.exp])};
 		
 	id_ponto {-> exp} = 
 		{id_ponto} identificador ponto {-> New exp.a_id(identificador)};
