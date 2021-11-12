@@ -150,11 +150,11 @@ Productions
   {func} dec_funcao {-> dec_funcao.dec2};
   
  dec_procedimento {-> dec2} =
-  {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro], dir.comando)}|
+  {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro])}|
   {dec_procedimento_com} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro], dir.comando)};
  
  dec_funcao {-> dec2} =
-  {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro], dir.exp)} |
+  {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro])} |
   {dec_funcao_com} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro], dir.exp)};
  
  lista_parametro {-> parametro*} =
