@@ -1,4 +1,9 @@
 .*
 !.gitignore
-src/jaca/
+
+src/jaca/analysis
+src/jaca/lexer
+src/jaca/node
+src/jaca/parser
+
 bin/
