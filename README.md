@@ -12,3 +12,6 @@ O que falta fazer:
 ✅ Resolver conflito shift/reduce em exp  
 ✅ Adicionar diretório bin/ ao .gitignore
 ✅ Fazer as substituições de , para |
+
+⬜️ linha 135 ajeitar lista. \
+⬜️ \

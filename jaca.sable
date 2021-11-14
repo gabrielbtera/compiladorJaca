@@ -93,13 +93,13 @@ Productions
     {relacao} relacao {-> [relacao]};
  
  relacao {-> relacao} =
-  {relacao} classe [esq]:pid_class [dir]:filha_relacao {-> New relacao.a_relacao(esq.pcid, dir.relacao)};
+  {relacao} classe [esq]:pcid [dir]:filha_relacao {-> New relacao.a_relacao(esq.pcid, dir.relacao)};
 
  filha_relacao {-> relacao} =
-  {filha_relacao} filha_da_classe pid_class {-> New relacao.a_filha_relacao(pcid)};
+  {filha_relacao} filha_da_classe pcid {-> New relacao.a_filha_relacao(pcid)};
 
  def_classe {-> def_classe} =
-  {def_classe} classe [nome]:pid_class inicio [esq]:atributos? [dir]:metodos? fim {-> New def_classe.a_def_classe(nome.pcid, [esq.dec], [dir.dec2])};
+  {def_classe} classe [nome]:pcid inicio [esq]:atributos? [dir]:metodos? fim {-> New def_classe.a_def_classe(nome.pcid, [esq.dec], [dir.dec2])};
 
  atributos {-> dec*} =
   {atributos} [esq]:dec [dir]:atributos {-> [esq.dec, dir.dec]} |
@@ -123,7 +123,7 @@ Productions
   {dec_cons} dec_cons {-> [dec_cons.dec]};
   
  dec_obj {-> dec} =
-  {dec_obj} objeto [esq]:pid_class [dir]:lista_id ponto_e_virgula {-> New dec.a_dec_obj(esq.pcid, [dir.exp])};
+  {dec_obj} objeto [esq]:pcid [dir]:lista_id ponto_e_virgula {-> New dec.a_dec_obj(esq.pcid, [dir.exp])};
   
  dec_var {-> dec} =
   {dec_var} variavel [esq]:tipo [dir]:lista_id ponto_e_virgula {-> New dec.a_dec_var(esq.tipo, [dir.exp])};
@@ -133,7 +133,7 @@ Productions
   
  lista_id {-> exp*} =
   {lista_id} [esq]:identificador virgula [dir]:lista_id {-> [esq.exp, dir.exp]} |
-  {id} identificador {-> [pid.exp]};
+  {id} pid {-> [pid.exp]};
  
  lista_inicializacao {-> pinicializacao*} =
   {lista_inicializacao} [esq]:pinicializacao virgula [dir]:lista_inicializacao {-> [esq.pinicializacao, dir.pinicializacao]} |
@@ -142,7 +142,7 @@ Productions
  pinicializacao {-> pinicializacao} =
   {pinicializacao} [esq]:identificador inicializacao [dir]:exp {-> New pinicializacao.a_pinicializacao(esq.exp, dir.exp)};
   
- pid_class =
+ pcid =
   {id_class} id_class;
  
  dec2 {-> dec2} =
@@ -192,7 +192,10 @@ Productions
  
  cont_comando_else  {-> comando}=
   {cont_cond} senao comando_else {-> comando_else.comando};
- 
+  
+  pid {-> exp} =
+	  {id} identificador {-> New exp.a_id(identificador)};
+  
   lista_comandos  {-> comando*} =
     {lista_comandos} [esq]:comando [dir]:lista_comandos {-> [esq.comando, dir.comando]} |
     {comando} comando {-> [comando]};
@@ -250,7 +253,7 @@ Abstract Syntax Tree
       {a_lista_relacao} relacao+;
     relacao =
       {a_relacao} [esq]:pcid [dir]:relacao |
-      {a_filha_relacao} id_class;
+      {a_filha_relacao} pcid;
 
     def_classe =
       {a_def_classe} [nome]:pcid [esq]:dec* [dir]:dec2*;
@@ -262,7 +265,7 @@ Abstract Syntax Tree
     pinicializacao =
       {a_pinicializacao} [esq]:exp [dir]:exp;
     pcid =
-      {cid} id_class;
+      {id_class} id_class;
 
     dec2 =
       {a_dec_procedimento} [esq]:exp [mid]:parametro* [dir]:comando |
