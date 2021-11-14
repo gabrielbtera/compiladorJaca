@@ -1,4 +1,4 @@
 .*
 !.gitignore
-jaca/
+src/jaca/
 bin/

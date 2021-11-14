@@ -5,7 +5,6 @@ início
     
     var real id;
     var real CPF;
-    CPF := 0,0;
 
     função real getId () id
     
@@ -31,7 +30,7 @@ início
     
     função real getSalário () salário
     
-    procedimento setSalário (novo_salário)
+    procedimento setSalário (real novo_salário)
       salário := novo_salário;
     
 
@@ -47,7 +46,7 @@ início
 
     função real getSalário () salário
     
-    procedimento setSalário (novo_salário)       
+    procedimento setSalário (real novo_salário)       
         salário := novo_salário;
     
     # polimorfismo
