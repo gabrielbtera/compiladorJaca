@@ -250,7 +250,7 @@ Abstract Syntax Tree
       {a_lista_relacao} relacao+;
     relacao =
       {a_relacao} [esq]:pcid [dir]:relacao |
-      {a_filha_relacao} pcid;
+      {a_filha_relacao} id_class;
 
     def_classe =
       {a_def_classe} [nome]:pcid [esq]:dec* [dir]:dec2*;
