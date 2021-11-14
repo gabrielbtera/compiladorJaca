@@ -132,7 +132,7 @@ Productions
   {dec_cons} constante [esq]:tipo_primitivo [dir]:lista_inicializacao+ ponto_e_virgula {-> New dec.a_dec_cons(esq.tipo_primitivo, [dir.pinicializacao])};
   
  lista_id {-> exp*} =
-  {lista_id} [esq]:identificador virgula [dir]:lista_id {-> [esq.exp, dir.exp]} |
+  {lista_id} [esq]:pid virgula [dir]:lista_id {-> [esq.exp, dir.exp]} |
   {id} pid {-> [pid.exp]};
  
  lista_inicializacao {-> pinicializacao*} =
@@ -140,7 +140,7 @@ Productions
   {inicializacao} pinicializacao {-> [pinicializacao]};
   
  pinicializacao {-> pinicializacao} =
-  {pinicializacao} [esq]:identificador inicializacao [dir]:exp {-> New pinicializacao.a_pinicializacao(esq.exp, dir.exp)};
+  {pinicializacao} [esq]:pid inicializacao [dir]:exp {-> New pinicializacao.a_pinicializacao(esq.exp, dir.exp)};
   
  pcid =
   {id_class} id_class;
@@ -150,12 +150,12 @@ Productions
   {func} dec_funcao {-> dec_funcao.dec2};
   
  dec_procedimento {-> dec2} =
-  {dec_procedimento} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro])}|
-  {dec_procedimento_com} ponto_de_entrada? procedimento [esq]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro], dir.comando)};
+  {dec_procedimento} ponto_de_entrada? procedimento [esq]:pid parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_procedimento(esq.exp, [mid.parametro])}|
+  {dec_procedimento_com} ponto_de_entrada? procedimento [esq]:pid parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:comando {-> New dec2.a_dec_procedimento_com(esq.exp, [mid.parametro], dir.comando)};
  
  dec_funcao {-> dec2} =
-  {dec_funcao} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro])} |
-  {dec_funcao_com} funcao [esq]:tipo [esqn]:identificador parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro], dir.exp)};
+  {dec_funcao} funcao [esq]:tipo [esqn]:pid parenteses_esquerdo [mid]:lista_parametro? parenteses_direito ponto_e_virgula {-> New dec2.a_dec_funcao(esq.tipo, esqn.exp, [mid.parametro])} |
+  {dec_funcao_com} funcao [esq]:tipo [esqn]:pid parenteses_esquerdo [mid]:lista_parametro? parenteses_direito [dir]:exp {-> New dec2.a_dec_funcao_com(esq.tipo, esqn.exp, [mid.parametro], dir.exp)};
  
  lista_parametro {-> parametro*} =
   {lista_parametro} [esq]:parametro separador [dir]:lista_parametro {-> [esq.parametro, dir.parametro]}|
@@ -179,14 +179,14 @@ Productions
   {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando {-> New comando.a_cond(esq.exp, dir.comando)}|
   {cond_else} se parenteses_esquerdo [esq]:exp parenteses_direito [mid]:comando_else senao [dir]:comando {-> New comando.a_cond_else(esq.exp, mid.comando, dir.comando)} |
   {loop} enquanto parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando {-> New comando.a_loop(esq.exp, dir.comando)}|
-  {atrib} [esq]:identificador inicializacao [dir]:exp ponto_e_virgula  {-> New comando.a_atrib(esq.exp, dir.exp)}|
+  {atrib} [esq]:pid inicializacao [dir]:exp ponto_e_virgula  {-> New comando.a_atrib(esq.exp, dir.exp)}|
   {call} [esq]:id_ponto? [dir]:chamada ponto_e_virgula {-> New comando.a_call(esq.exp, dir.exp)} |
   {bloco} bloco {-> bloco.comando};
  
  comando_else {-> comando} =
   {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [mid]:comando_else [dir]:cont_comando_else {-> New comando.a_cont_cond_else(esq.exp, mid.comando, dir.comando)}|
   {loop} enquanto parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando_else {-> New comando.a_loop_else(esq.exp, dir.comando)}|
-  {atrib} [esq]:identificador inicializacao [dir]:exp ponto_e_virgula {-> New comando.a_atrib_else(esq.exp, dir.exp)} |
+  {atrib} [esq]:pid inicializacao [dir]:exp ponto_e_virgula {-> New comando.a_atrib_else(esq.exp, dir.exp)} |
   {call} [esq]:id_ponto? [dir]:chamada ponto_e_virgula {-> New comando.a_call_else(esq.exp, dir.exp)} |
   {bloco} bloco {-> bloco.comando};
  
@@ -200,7 +200,7 @@ Productions
     {lista_comandos} [esq]:comando [dir]:lista_comandos {-> [esq.comando, dir.comando]} |
     {comando} comando {-> [comando]};
   
-    bloco {-> comando} = {bloco} inicio dec* comando* fim  {-> New comando.a_bloco([esq.dec], [dir.comando])};
+    bloco {-> comando} = {bloco} inicio [esq]:dec* [dir]:comando* fim  {-> New comando.a_bloco([esq.dec], [dir.comando])};
  
 	exp {-> exp} =
 		{termo} termo {-> termo.exp} |
@@ -231,17 +231,16 @@ Productions
 		{chamada} [esq]:id_ponto? [dir]:chamada {-> New exp.a_id_call(esq.exp, dir.exp)};
 		 
 	chamada {-> exp} =
-		{chamada} identificador parenteses_esquerdo lista_exp? parenteses_direito |
-    {-> New exp.a_chamada(identificador.exp, [lista_exp.exp])};
+		{chamada} identificador parenteses_esquerdo lista_exp? parenteses_direito {-> New exp.a_chamada(identificador.exp, [lista_exp.exp])};
 		
 	id_ponto {-> exp} = 
 		{id_ponto} identificador ponto {-> New exp.a_id(identificador)};
 	
 	bloco_exp {-> exp} = 
-		{bloco_exp} inicio dec_cons* exp fim {-> New exp.a_bloco_exp([esq.dec], dir.exp)};
+		{bloco_exp} inicio [esq]:dec_cons* [dir]:exp fim {-> New exp.a_bloco_exp([esq.dec], dir.exp)};
 	
 	lista_exp {-> exp*} =
-		{lista_exp} exp separador lista_exp  {-> [esq.exp, dir.exp]} |
+		{lista_exp} [esq]:exp separador [dir]:lista_exp  {-> [esq.exp, dir.exp]} |
 		{exp} exp {-> [exp]};
 
 
@@ -268,8 +267,10 @@ Abstract Syntax Tree
       {id_class} id_class;
 
     dec2 =
-      {a_dec_procedimento} [esq]:exp [mid]:parametro* [dir]:comando |
-      {a_dec_funcao} [esq]:tipo [esqn]:exp [mid]:parametro* [dir]:exp;
+      {a_dec_procedimento} [esq]:exp [mid]:parametro* |
+      {a_dec_procedimento_com} [esq]:exp [mid]:parametro* [dir]:comando |
+      {a_dec_funcao} [es]:tipo [esqn]:exp [mid]:parametro* |
+      {a_dec_funcao_com} [esq]:tipo [esqn]:exp [mid]:parametro* [dir]:exp;
     parametro =
       {parametro} tipo identificador;
 
