@@ -197,7 +197,7 @@ Productions
     {lista_comandos} [esq]:comando [dir]:lista_comandos {-> [esq.comando, dir.comando]} |
     {comando} comando {-> [comando]};
   
-    bloco = {bloco} inicio dec* comando* fim  {-> New comando.a_bloco([esq.dec], [dir.comando])};
+    bloco {-> comando} = {bloco} inicio dec* comando* fim  {-> New comando.a_bloco([esq.dec], [dir.comando])};
  
 	exp {-> exp} =
 		{termo} termo {-> termo.exp} |
@@ -211,8 +211,8 @@ Productions
     {menor} [esq]:termo menor_q [dir]:exp {-> New exp.a_menor(esq.exp, dir.exp)} |
     {menorig} [esq]:termo menor_igual [dir]:exp {-> New exp.a_menor_igual(esq.exp, dir.exp)}|
     {negacao} negacao exp {-> New exp.a_negacao(exp)} |
-    {and} [esq]:termo e [dir]:exp {New -> exp.a_and(esq.exp, dir.exp)} | 
-    {or} [esq]:termo ou [dir]:exp {New -> exp.a_or(esq.exp, dir.exp)} |
+    {and} [esq]:termo e [dir]:exp {-> New exp.a_and(esq.exp, dir.exp)} | 
+    {or} [esq]:termo ou [dir]:exp {-> New exp.a_or(esq.exp, dir.exp)} |
     {bloco_exp} bloco_exp;
 	
 	termo {-> exp} = 
@@ -262,22 +262,21 @@ Abstract Syntax Tree
     pinicializacao =
       {a_pinicializacao} [esq]:exp [dir]:exp;
     pcid =
-      {cid} cid;
+      {cid} id_class;
 
     dec2 =
       {a_dec_procedimento} [esq]:exp [mid]:parametro* [dir]:comando |
       {a_dec_funcao} [esq]:tipo [esqn]:exp [mid]:parametro* [dir]:exp;
     parametro =
-      {parametro} tipo id;
+      {parametro} tipo identificador;
 
     tipo =
       {a_tipo_classe} tipo_classe |
       {a_tipo_primtivo} tipo_primitivo;
     tipo_classe =
-      {tipo_classe} cid;
+      {tipo_classe} id_class;
     tipo_primitivo =
-      {int} int |
-      {bool} bool |
+      {bool} boleano |
       {real} real;
 
   comando =
