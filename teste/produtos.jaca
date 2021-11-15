@@ -1,8 +1,9 @@
-classe _Laticínios filha da classe _Produtos & classe _Cereais filha da classe _Produtos;
+classe _Laticínios filha                               da 
+classe _Produtos & classe _Cereais filha da classe _Produtos;
 
 classe _Produtos
 início
-    var real preço;
+    var real ab1;
     var real codigo;
 
     procedimento setPreço (real novo_preço)
@@ -21,11 +22,11 @@ fim
 
 classe _Laticínios
 início
-    const real desconto := 1,50;
+    const real desconto := 5e-22;
 
     procedimento setDesconto()
     início
-    se (preço >= 5,0) preço := preço - desconto; senão preço := preço - (desconto - 0,75);
+    se (5,0 <= preço) preço := preço - desconto; senão preço := preço - (desconto - 0,75);
 
     fim
 

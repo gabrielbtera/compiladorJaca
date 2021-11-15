@@ -5,8 +5,8 @@ Helpers
   digito = ['0' .. '9'];
   underline = '_';
 
-  letra_minuscula =  (['a' .. 'z'] | [224 .. 227] | [233 .. 234] | 237 | [243 .. 245] | 250 | 231);
-  letra_maiuscula = (['A' .. 'Z'] | [192 .. 195] | [201 .. 202] | [211 .. 213] | 218 | 199);
+  letra_minuscula =  (['a' .. 'z'] | [224 .. 227] | [233 .. 234] | 237 | [243 .. 245] | 250 | 231 | digito);
+  letra_maiuscula = (['A' .. 'Z'] | [192 .. 195] | [201 .. 202] | [211 .. 213] | 218 | 199 | digito);
 
   identificador_undermeio = (letra_maiuscula | underline | letra_minuscula)+ | (letra_minuscula | underline | letra_maiuscula)+;
   identificador_underfim = (letra_maiuscula | letra_minuscula | underline)+ | ( letra_minuscula | letra_maiuscula | underline)+;
@@ -22,7 +22,7 @@ Helpers
 
   numero_inteiro = digito+;
   numero_real = numero_inteiro ',' numero_inteiro;
-  real_cientifico = digito (',' numero_inteiro)? ('e' | 'E') '-'? numero_inteiro;
+  real_cientifico = digito+ (',' numero_inteiro+)? ('e' | 'E') '-'? numero_inteiro;
 
 
 Tokens
@@ -60,7 +60,8 @@ Tokens
 	e = 'e';
 	ou = 'ou';
 	ponto = '.';
-	filha_da_classe = 'filha da classe';
+	filha = 'filha';
+	da = 'da';
 	ponto_de_entrada  = '>>>';
  	separador = '|';
  	comentario = comentario_bloco | comentario_linha;
@@ -96,7 +97,7 @@ Productions
   {relacao} classe [esq]:pcid [dir]:filha_relacao {-> New relacao.a_relacao(esq.pcid, dir.relacao)};
 
  filha_relacao {-> relacao} =
-  {filha_relacao} filha_da_classe pcid {-> New relacao.a_filha_relacao(pcid)};
+  {filha_relacao} filha da classe pcid {-> New relacao.a_filha_relacao(pcid)};
 
  def_classe {-> def_classe} =
   {def_classe} classe [nome]:pcid inicio [esq]:atributos? [dir]:metodos? fim {-> New def_classe.a_def_classe(nome.pcid, [esq.dec], [dir.dec2])};
@@ -166,7 +167,7 @@ Productions
 
  tipo {-> tipo} =
   {classe} tipo_classe {-> New tipo.a_tipo_classe(tipo_classe)} |
-  {primitivo} tipo_primitivo {-> New tipo.a_tipo_primtivo(tipo_primitivo)};
+  {primitivo} tipo_primitivo {-> New tipo.a_tipo_primitivo(tipo_primitivo)};
  
  tipo_classe =
   {tipo_classe} id_class;
@@ -276,7 +277,7 @@ Abstract Syntax Tree
 
     tipo =
       {a_tipo_classe} tipo_classe |
-      {a_tipo_primtivo} tipo_primitivo;
+      {a_tipo_primitivo} tipo_primitivo;
     tipo_classe =
       {tipo_classe} id_class;
     tipo_primitivo =

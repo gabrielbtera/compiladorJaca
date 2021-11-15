@@ -3,7 +3,7 @@ classe _Funcionário filha da classe _Pessoas & classe _Gerente filha da classe 
 classe _Pessoas
 início
     
-    var real id;
+    var real id1;
     var real CPF;
 
     função real getId () id
