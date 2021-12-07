@@ -44,6 +44,7 @@ public class Semantico extends DepthFirstAdapter {
 			while (it.hasNext())
 			{
 				tabela = (LinkedHashMap<Integer, Simbolo>) it.next();
+				
 				if (tabela.containsKey(pos_id))
 				{
 					simbolo = tabela.get(pos_id);
