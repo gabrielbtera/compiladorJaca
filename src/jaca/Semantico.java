@@ -81,7 +81,7 @@ public class Semantico extends DepthFirstAdapter {
 			{
 				return true;
 			}
-			else if (tabela.get(pos).getValor().equals("R") && (func_arg.equals("int ") || func_arg.equals("bool ") || func_arg.equals("real ")))
+			else if (tabela.get(pos).getValor().equals("L") && (func_arg.equals("int ") || func_arg.equals("bool ") || func_arg.equals("real ")))
 			{
 				return true;
 			}
@@ -129,19 +129,21 @@ public class Semantico extends DepthFirstAdapter {
 	@Override
 	public void inAAProgramaPrograma(AAProgramaPrograma node)
 	{
-		//Adicionar a classe _IO e os seus métodos no início do programa
-		String nome = "_IO ";
+		//Adicionar a classe _ES e os seus métodos no início do programa
+		String nome = "_ES ";
 		int pos = hash(nome);
 		class_hash.put(pos, new LinkedList<LinkedHashMap<Integer, Simbolo>>());
 		table = (LinkedList<LinkedHashMap<Integer, Simbolo>>) class_hash.get(pos);
 		table.add(new LinkedHashMap<Integer, Simbolo>());
-		pos = hash("print ");
-		Simbolo sym_print = new Simbolo("func", "print ", "P", new ArrayList<String>());
+		
+		pos = hash("imprime ");
+		Simbolo sym_print = new Simbolo("func", "imprime ", "I", new ArrayList<String>());
 		sym_print.addParametro("Dummy");
 		table.getLast().put(pos, sym_print);
-		pos = hash("read ");
-		table.getLast().put(pos, new Simbolo("func", "read ", "R", new ArrayList<String>()));
-		System.out.println("Classe _IO importada");
+		
+		pos = hash("lê ");
+		table.getLast().put(pos, new Simbolo("func", "lê ", "L", new ArrayList<String>()));
+		System.out.println("Classe _ES importada");
 	}
 	
 	@Override
@@ -200,6 +202,7 @@ public class Semantico extends DepthFirstAdapter {
 	{
 		Iterator<LinkedHashMap<Integer, Simbolo>> it = table.descendingIterator();
 		int pos = hash(node.toString());
+		
 		while (it.hasNext())
 		{
 			LinkedHashMap<Integer, Simbolo> tabela = (LinkedHashMap<Integer, Simbolo>) it.next();
@@ -210,18 +213,17 @@ public class Semantico extends DepthFirstAdapter {
 					case "bool ":
 						node.replaceBy(new AABooleanoExp());
 						break;
-					case "int ":
-						node.replaceBy(new AANumeroExp());
-						break;
 					case "real ":
 						node.replaceBy(new AANumeroExp());
 						break;
 					default:
 						break;
 				}
+				
 				return;
 			}
 		}
+		
 		System.out.println(node.toString() + "não encontrado");
 	}
 	
@@ -348,8 +350,11 @@ public class Semantico extends DepthFirstAdapter {
 			{
 				valor = func.getTipo();
 			}
-			if (valor.equals("P"))
+			
+			System.out.println("============\n" + valor + "\n=============");
+			if (valor.equals("I"))
 			{
+				
 				if (len_copy != 1)
 				{
 					System.out.println(nome + "recebe apenas 1 parâmetro");
@@ -360,7 +365,7 @@ public class Semantico extends DepthFirstAdapter {
 				}
 				return;
 			}
-			else if (valor.equals("R"))
+			else if (valor.equals("L"))
 			{
 				if (len_copy != 0)
 				{
@@ -368,6 +373,7 @@ public class Semantico extends DepthFirstAdapter {
 				}
 				return;
 			}
+			
 			int len_par = func.numParametros();
 			if (len_copy != len_par)
 			{
@@ -423,6 +429,428 @@ public class Semantico extends DepthFirstAdapter {
 			System.out.println("Função " + nome + "não encontrada");
 		}
 	}
+	
+	@Override
+	public void caseAADecConsDec(AADecConsDec node)
+	{
+		inAADecConsDec(node);
+		outAADecConsDec(node);
+	}
+
+	@Override
+	public void outAADecConsDec(AADecConsDec node)
+	{
+		String tipo = node.getEsq().toString();
+		List<PPinicializacao> copy = new ArrayList<PPinicializacao>(node.getDir());
+		for (int i = 0; i < copy.size(); i++)
+        {
+			String[] nome_val = copy.get(i).toString().split("\\s+");
+			int pos = hash(nome_val[0] + " ");
+			Simbolo novo = new Simbolo(tipo, nome_val[0] + " ", nome_val[1] + " ");
+			novo.setCons(true);
+			table.getLast().put(pos, novo);
+        }
+	}
+	
+	@Override
+	public void caseAADecVarDec(AADecVarDec node)
+	{
+		inAADecVarDec(node);
+		outAADecVarDec(node);
+	}
+
+	@Override
+	public void outAADecVarDec(AADecVarDec node)
+	{
+		String tipo = node.getEsq().toString();
+		List<PExp> copy = new ArrayList<PExp>(node.getDir());
+		for (int i = 0; i < copy.size(); i++)
+        {
+			String[] nome_val = copy.get(i).toString().split("\\s+");
+			int pos = hash(nome_val[0] + " ");
+			table.getLast().put(pos, new Simbolo(tipo, nome_val[0] + " "));
+        }
+	}
+	
+	@Override
+	public void caseAADecObjDec(AADecObjDec node)
+	{
+		inAADecObjDec(node);
+		outAADecObjDec(node);
+	}
+
+	@Override
+	public void outAADecObjDec(AADecObjDec node)
+	{
+		String tipo = node.getEsq().toString();
+		int pos = hash(tipo);
+		if (class_hash.containsKey(pos))
+		{
+			List<PExp> copy = new ArrayList<PExp>(node.getDir());
+			for (int i = 0; i < copy.size(); i++)
+			{
+				String[] nome_val = copy.get(i).toString().split("\\s+");
+				pos = hash(nome_val[0] + " ");
+				table.getLast().put(pos, new Simbolo(tipo, nome_val[0] + " "));
+			}
+		}
+		else
+		{
+			System.out.println("A classe " + tipo + "não existe");
+		}
+	}
+	
+	@Override
+	public void inAADecFuncaoComDec2(AADecFuncaoComDec2 node)
+	{
+		String nome = node.getEsqn().toString();
+		String valor = node.getEsq().toString();
+		int pos = hash(nome);
+		System.out.println("Abriu uma nova função");
+		table.getLast().put(pos, new Simbolo("func", nome, valor, new ArrayList<String>()));
+		Simbolo func = table.getLast().get(pos);
+		table.add(new LinkedHashMap<Integer, Simbolo>());
+		List<PParametro> copy = new ArrayList<PParametro>(node.getMid());
+		for (int i = 0; i < copy.size(); i++)
+        {
+			String[] nome_val = copy.get(i).toString().split("\\s+");
+			pos = hash(nome_val[1] + " ");
+			table.getLast().put(pos, new Simbolo(nome_val[0] + " ", nome_val[1] + " "));
+			func.addParametro(nome_val[0]);
+        }
+	}
+
+	@Override
+	public void outAADecFuncaoComDec2(AADecFuncaoComDec2 node)
+	{
+		table.removeLast();
+	}
+
+	@Override
+	public void caseAADecFuncaoComDec2(AADecFuncaoComDec2 node)
+	{
+		inAADecFuncaoComDec2(node);
+		if (node.getDir() != null)
+		{
+			node.getDir().apply(this);
+		}
+		outAADecFuncaoComDec2(node);
+	}
+
+	@Override
+	public void inAADecProcedimentoComDec2(AADecProcedimentoComDec2 node)
+	{
+		String nome = node.getEsq().toString();
+		int pos = hash(nome);
+		table.getLast().put(pos, new Simbolo("procedimento", nome, new ArrayList<String>()));
+		Simbolo proc = table.getLast().get(pos);
+		System.out.println("Abriu um novo procedimento");
+		table.add(new LinkedHashMap<Integer, Simbolo>());
+		List<PParametro> copy = new ArrayList<PParametro>(node.getMid());
+		for (int i = 0; i < copy.size(); i++)
+        {
+			String[] nome_val = copy.get(i).toString().split("\\s+");
+			pos = hash(nome_val[1] + " ");
+			table.getLast().put(pos, new Simbolo(nome_val[0] + " ", nome_val[1] + " "));
+			proc.addParametro(nome_val[0]);
+		}
+	}
+
+	@Override
+	public void outAADecProcedimentoComDec2(AADecProcedimentoComDec2 node)
+	{
+		table.removeLast();
+	}
+
+	@Override
+	public void caseAADecProcedimentoComDec2(AADecProcedimentoComDec2 node)
+	{
+		inAADecProcedimentoComDec2(node);
+		if (node.getDir() != null)
+		{
+			node.getDir().apply(this);
+		}
+		outAADecProcedimentoComDec2(node);
+	}
+
+	@Override
+	public void inAABlocoComando(AABlocoComando node)
+	{
+		String nome = node.getEsq().toString();
+		int pos = hash(nome);
+		table.getLast().put(pos, new Simbolo("bloco", nome));
+		System.out.println("Abriu um novo bloco");
+		table.add(new LinkedHashMap<Integer, Simbolo>());
+	}
+
+	@Override
+	public void outAABlocoComando(AABlocoComando node)
+	{
+		table.removeLast();
+	}
+
+	@Override
+	public void inAABlocoExpExp(AABlocoExpExp node)
+	{
+		String nome = node.getEsq().toString();
+		int pos = hash(nome);
+		table.getLast().put(pos, new Simbolo("bloco_exp", nome));
+		System.out.println("Abriu um novo bloco de exp");
+		table.add(new LinkedHashMap<Integer, Simbolo>());
+	}
+
+	@Override
+	public void outAABlocoExpExp(AABlocoExpExp node)
+	{
+		table.removeLast();
+	}
+
+	@Override
+	public void caseAAAtribComando(AAAtribComando node)
+	{
+		inAAAtribComando(node);
+		if (node.getEsq() != null)
+		{
+			String nome = node.getEsq().toString();
+			String tipo = null;
+			int pos = hash(nome);
+			Iterator<LinkedHashMap<Integer, Simbolo>> it = table.descendingIterator();
+			while (it.hasNext())
+			{
+				LinkedHashMap<Integer, Simbolo> tabela = (LinkedHashMap<Integer, Simbolo>) it.next();
+				if (tabela.containsKey(pos))
+				{
+					Simbolo decla = tabela.get(pos);
+					if (decla.getCons())
+					{
+						System.out.println("Não é possível modificar o valor de uma constante");
+						return;
+					}
+					tipo = decla.getTipo();
+					break;
+				}
+			}
+			if (tipo == null)
+			{
+				System.out.println(nome + "não está declarado");
+			}
+			else
+			{
+				if (node.getDir() != null)
+				{
+					node.getDir().apply(this);
+					if (node.getDir() instanceof AAIdCallExp)
+					{
+						if (!(check_id_call_exp(node.getDir(), tipo)))
+						{
+							System.out.println("Erro de atribuição no lado direito");
+							System.out.println(((AAIdCallExp) node.getDir()).toString() + tipo);
+						}
+					}
+					else if (node.getDir() instanceof AAIdExp)
+					{
+						if (!(check_id_exp(node.getDir(), tipo)))
+						{
+							System.out.println("Erro de atribuição no lado direito");
+							System.out.println(((AAIdExp) node.getDir()).toString() + tipo);
+						}
+					}
+					else if ((tipo.equals("int ") || tipo.equals("real ")) && !(node.getDir() instanceof AANumeroExp))
+					{
+						System.out.println("O lado direito da operação não é um número");
+					}
+					else if (tipo.equals("bool ") && !(node.getDir() instanceof AABooleanoExp))
+					{
+						System.out.println("O lado esquerdo da operação não é um booleano");
+					}
+				}
+			}
+		}
+		outAAAtribComando(node);
+	}
+
+	@Override
+	public void outAASomaExp(AASomaExp node)
+	{
+		if (node.getEsq() instanceof AANumeroExp &&
+			node.getDir() instanceof AANumeroExp)
+		{
+			node.replaceBy(new AANumeroExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de soma em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAASubtExp(AASubtExp node)
+	{
+		if (node.getEsq() instanceof AANumeroExp &&
+			node.getDir() instanceof AANumeroExp)
+		{
+			node.replaceBy(new AANumeroExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de subtração em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAAMultiExp(AAMultiExp node)
+	{
+		if (node.getEsq() instanceof AANumeroExp &&
+			node.getDir() instanceof AANumeroExp)
+		{
+			node.replaceBy(new AANumeroExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de multiplicação em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAADivExp(AADivExp node)
+	{
+		if (node.getEsq() instanceof AANumeroExp &&
+			node.getDir() instanceof AANumeroExp)
+		{
+			node.replaceBy(new AANumeroExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de divisão em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAAModExp(AAModExp node)
+	{
+		if (node.getEsq() instanceof AANumeroExp &&
+			node.getDir() instanceof AANumeroExp)
+		{
+			node.replaceBy(new AANumeroExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de módulo em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAAIgualExp(AAIgualExp node)
+	{
+		if ((node.getEsq() instanceof AANumeroExp &&
+			node.getDir() instanceof AANumeroExp) ||
+			(node.getEsq() instanceof AABooleanoExp &&
+			node.getDir() instanceof AABooleanoExp))
+		{
+			node.replaceBy(new AABooleanoExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de igualdade em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAAMenorExp(AAMenorExp node)
+	{
+		if (node.getEsq() instanceof AANumeroExp &&
+			node.getDir() instanceof AANumeroExp)
+		{
+			node.replaceBy(new AABooleanoExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de menor que em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAAOrExp(AAOrExp node)
+	{
+		if (node.getEsq() instanceof AABooleanoExp &&
+			node.getDir() instanceof AABooleanoExp)
+		{
+			node.replaceBy(new AABooleanoExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de ou em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAAAndExp(AAAndExp node)
+	{
+		if (node.getEsq() instanceof AABooleanoExp &&
+			node.getDir() instanceof AABooleanoExp)
+		{
+			node.replaceBy(new AABooleanoExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de e em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAANegativoExp(AANegativoExp node)
+	{
+		if (node.getExp() instanceof AANumeroExp)
+		{
+			node.replaceBy(new AANumeroExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de negação em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAANegacaoExp(AANegacaoExp node)
+	{
+		if (node.getExp() instanceof AABooleanoExp)
+		{
+			node.replaceBy(new AABooleanoExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de negação em " + node.toString());
+		}
+	}
+
+	@Override
+	public void outAASeCondExp(AASeCondExp node)
+	{
+		if (!(node.getEsq() instanceof AABooleanoExp))
+			System.out.println("A expressão " + node.toString() + "deve ter como resultado um booleano!");
+	}
+
+	@Override
+	public void outAACondComando(AACondComando node)
+	{
+		if (!(node.getEsq() instanceof AABooleanoExp))
+			System.out.println("A expressão " + node.toString() + "deve ter como resultado um booleano!");
+	}
+
+	@Override
+	public void outAACondElseComando(AACondElseComando node)
+	{
+		if (!(node.getEsq() instanceof AABooleanoExp))
+			System.out.println("A expressão " + node.toString() + "deve ter como resultado um booleano!");
+	}
+
+	@Override
+	public void outAAContCondElseComando(AAContCondElseComando node)
+	{
+		if (!(node.getEsq() instanceof AABooleanoExp))
+			System.out.println("A expressão " + node.toString() + "deve ter como resultado um booleano!");
+	}
+
 
 }
 
