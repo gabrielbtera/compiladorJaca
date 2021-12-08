@@ -171,10 +171,9 @@ Productions
  
  tipo_classe =
   {tipo_classe} id_class;
- 
-	tipo_primitivo =
-    	{bool} boleano |
-  		{real} real;
+ tipo_primitivo =
+	{bool} boleano |
+	{real} real;
 
  comando {-> comando} =
   {cond} se parenteses_esquerdo [esq]:exp parenteses_direito [dir]:comando {-> New comando.a_cond(esq.exp, dir.comando)}|
@@ -221,10 +220,14 @@ Productions
 	
 	termo {-> exp} = 
 		{numero} numero {-> New exp.a_numero(numero)} |
-		{verdade} verdade {-> New exp.a_true(verdade)} |
-		{falso} falso {-> New exp.a_false(falso)}|
+		{booleano} booleano {-> New exp.a_booleano(booleano)} |
 		{parenteses} parenteses_esquerdo exp parenteses_direito {-> exp.exp} |
 		{valor} valor {-> valor.exp};
+	
+	booleano =
+  	    {true} verdade |
+  		{false} falso;
+      
 	
 	valor {-> exp} =
 		{id} identificador {-> New exp.a_id(identificador)} |
@@ -318,5 +321,11 @@ Abstract Syntax Tree
       {a_id_call} [esq]:exp? [dir]:exp |
       {a_chamada} [esq]:exp [dir]:exp* |
       {a_numero} numero |
-      {a_true} verdade |
-      {a_false} falso;
+      {a_booleano} booleano;
+      
+      
+  booleano =
+  {true} verdade |
+  {false} falso;
+      
+      

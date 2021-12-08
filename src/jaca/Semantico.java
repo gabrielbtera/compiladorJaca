@@ -143,5 +143,286 @@ public class Semantico extends DepthFirstAdapter {
 		table.getLast().put(pos, new Simbolo("func", "read ", "R", new ArrayList<String>()));
 		System.out.println("Classe _IO importada");
 	}
+	
+	@Override
+	public void outAARelacaoRelacao(AARelacaoRelacao node)
+	{
+		String filha = node.getEsq().toString();
+		String pai = node.getDir().toString();
+		int pos = hash(filha);
+		if (familia.containsKey(pos))
+		{
+			familia.get(pos).add(pai);
+		}
+		else
+		{
+			familia.put(pos, new ArrayList<String>());
+			familia.get(pos).add(pai);
+		}
+	}
+	@Override
+	public void inAADefClasseDefClasse(AADefClasseDefClasse node)
+	{
+		String nome = node.getNome().toString();
+		int pos = hash(nome);
+		class_hash.put(pos, new LinkedList<LinkedHashMap<Integer, Simbolo>>());
+		System.out.println("Nova classe");
+		System.out.println("Abriu um novo escopo");
+		table = (LinkedList<LinkedHashMap<Integer, Simbolo>>) class_hash.get(pos);
+		table.add(new LinkedHashMap<Integer, Simbolo>());
+		if (familia.containsKey(pos))
+		{
+			ArrayList<String> pais = familia.get(pos);
+			for (String pai : pais)
+			{
+				pos = hash(pai);
+				if (class_hash.containsKey(pos))
+				{
+					LinkedHashMap<Integer, Simbolo> tabela = class_hash.get(pos).getFirst();
+					for (Integer key : tabela.keySet())
+					{
+						Simbolo atual = tabela.get(key);
+						nome = atual.getNome();
+						pos = hash(nome);
+						table.getFirst().put(pos, atual);
+					}
+				}
+				else
+				{
+					System.out.println("O pai " + pai + "de " + nome + "não foi declarado");
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void outAAIdExp(AAIdExp node)
+	{
+		Iterator<LinkedHashMap<Integer, Simbolo>> it = table.descendingIterator();
+		int pos = hash(node.toString());
+		while (it.hasNext())
+		{
+			LinkedHashMap<Integer, Simbolo> tabela = (LinkedHashMap<Integer, Simbolo>) it.next();
+			if (tabela.containsKey(pos))
+			{
+				Simbolo simbolo = tabela.get(pos);
+				switch (simbolo.getTipo()) {
+					case "bool ":
+						node.replaceBy(new AABooleanoExp());
+						break;
+					case "int ":
+						node.replaceBy(new AANumeroExp());
+						break;
+					case "real ":
+						node.replaceBy(new AANumeroExp());
+						break;
+					default:
+						break;
+				}
+				return;
+			}
+		}
+		System.out.println(node.toString() + "não encontrado");
+	}
+	
+	@Override
+	public void caseAACallComando(AACallComando node)
+	{
+		boolean flag = true;
+		inAACallComando(node);
+		if (node.getEsq() != null)
+		{
+			flag = false;
+			Iterator<LinkedHashMap<Integer, Simbolo>> it = table.descendingIterator();
+			String nome = node.getEsq().toString();
+			int pos = hash(nome);
+			Simbolo simbolo = null;
+			while (it.hasNext())
+			{
+				LinkedHashMap<Integer, Simbolo> tabela = (LinkedHashMap<Integer, Simbolo>) it.next();
+				if (tabela.containsKey(pos))
+				{
+					simbolo = tabela.get(pos);
+					break;
+				}
+			}
+			if (simbolo != null)
+			{
+				nome = simbolo.getTipo();
+				pos = hash(nome);
+				temp_table = class_hash.get(pos);
+				flag = true;
+			}
+			else
+			{
+				System.out.println(nome + "não é uma classe");
+			}
+		}
+		if (node.getDir() != null && flag)
+		{
+			node.getDir().apply(this);
+		}
+		outAACallComando(node);
+	}
+	
+	@Override
+	public void caseAAIdCallExp(AAIdCallExp node)
+	{
+		inAAIdCallExp(node);
+		if (node.getEsq() != null)
+		{
+			Iterator<LinkedHashMap<Integer, Simbolo>> it = table.descendingIterator();
+			String nome = node.getEsq().toString();
+			int pos = hash(nome);
+			Simbolo simbolo = null;
+			while (it.hasNext())
+			{
+				LinkedHashMap<Integer, Simbolo> tabela = (LinkedHashMap<Integer, Simbolo>) it.next();
+				if (tabela.containsKey(pos))
+				{
+					simbolo = tabela.get(pos);
+					break;
+				}
+			}
+			if (simbolo != null)
+			{
+				nome = simbolo.getTipo();
+				pos = hash(nome);
+				temp_table = class_hash.get(pos);
+			}
+			else
+			{
+				System.out.println(nome + "não é uma classe");
+			}
+		}
+		else
+		{
+			temp_table = null;
+		}
+		if (node.getDir() != null)
+		{
+			node.getDir().apply(this);
+		}
+		outAAIdCallExp(node);
+	}
+	
+	@Override
+	public void outAAIdCallExp(AAIdCallExp node)
+	{
+		if (node.getDir() instanceof AANumeroExp)
+		{
+			node.replaceBy(new AANumeroExp());
+		}
+		else if (node.getDir() instanceof AABooleanoExp)
+		{
+			node.replaceBy(new ABoolTipoPrimitivo());
+		}
+	}
+	
+	@Override
+	public void outAAChamadaExp(AAChamadaExp node)
+	{
+		LinkedHashMap<Integer, Simbolo> tabela;
+		if (temp_table != null)
+		{
+			tabela = temp_table.getFirst();
+			temp_table = null;
+		}
+		else
+		{
+			tabela = table.getFirst();
+		}
+		String nome = node.getEsq().toString();
+		int pos = hash(nome);
+		if (tabela.containsKey(pos))
+		{
+			Simbolo func = tabela.get(pos);
+			List<PExp> copy = new ArrayList<PExp>(node.getDir());
+			int len_copy = copy.size();
+			String valor;
+			if (func.getTipo().equals("func"))
+			{
+				valor = func.getValor();
+			}
+			else
+			{
+				valor = func.getTipo();
+			}
+			if (valor.equals("P"))
+			{
+				if (len_copy != 1)
+				{
+					System.out.println(nome + "recebe apenas 1 parâmetro");
+				}
+				else if (len_copy == 1 && !(copy.get(0) instanceof AABooleanoExp || copy.get(0) instanceof AANumeroExp))
+				{
+					System.out.println(nome + "deve receber um inteiro, um número real ou um booleano");
+				}
+				return;
+			}
+			else if (valor.equals("R"))
+			{
+				if (len_copy != 0)
+				{
+					System.out.println(nome + "recebe nenhum parâmetro");
+				}
+				return;
+			}
+			int len_par = func.numParametros();
+			if (len_copy != len_par)
+			{
+				System.out.println(nome + "tem " + len_par + " paramêtros, mas está recebendo " + len_copy + " parâmetros");
+			}
+			for (int i = 0; i < len_copy; i++)
+			{
+				if (func.getParametro(i).equals("bool") &&
+					copy.get(i) instanceof AABooleanoExp)
+				{
+					continue;
+				}
+				else if ((func.getParametro(i).equals("int") || func.getParametro(i).equals("real")) &&
+					copy.get(i) instanceof AANumeroExp)
+				{
+					continue;
+				}
+				else if (copy.get(i) instanceof AAIdCallExp)
+				{
+					if (check_id_call_exp(copy.get(i), func.getParametro(i) + " "))
+					{
+						continue;
+					}
+				}
+				else if (copy.get(i) instanceof AAIdExp)
+				{
+					if (check_id_exp(copy.get(i), func.getParametro(i) + " "))
+					{
+						continue;
+					}
+				}
+				else
+				{
+					System.out.println("Erro em id_call");
+				}
+				System.out.println((i + 1) + "-ésimo parâmetro de tipo inválido");
+				return;
+			}
+			if (func.getTipo().equals("func"))
+			{
+				if (func.getValor().equals("int ") || func.getValor().equals("real "))
+				{
+					node.replaceBy(new AANumeroExp());
+				}
+				else if (func.getValor().equals("bool "))
+				{
+					node.replaceBy(new AABooleanoExp());
+				}
+			}
+		}
+		else
+		{
+			System.out.println("Função " + nome + "não encontrada");
+		}
+	}
+
 }
 
