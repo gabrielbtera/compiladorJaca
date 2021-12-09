@@ -26,10 +26,10 @@ public class Main {
   			Parser p = new Parser(new Lexer(new PushbackReader(new FileReader(arquivo), 1024)));
 
 			Start tree = p.parse();
+			
    			tree.apply(new ASTPrinter());
    			//tree.apply(new ASTDisplay());
             tree.apply(new Semantico());
-            System.out.println(new Semantico().table);
             
 		}
 		catch(Exception e)

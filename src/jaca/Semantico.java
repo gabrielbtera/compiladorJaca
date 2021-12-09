@@ -32,9 +32,11 @@ public class Semantico extends DepthFirstAdapter {
 			
 			String identation = "  ";
 			int counter = table.size();
+			Integer scope_number = 0;
 			
 			for (LinkedHashMap<Integer, Simbolo> scope : this.table) {
-				System.out.println('\n' + identation + "\t\t" + "TABLE");
+				System.out.println('\n' + identation + "\t\t" + "ABRIU UM NOVO ESCOPO " + scope_number.toString());
+				
 				counter--;
 				for (Map.Entry<Integer, Simbolo> symbol : scope.entrySet()) {
 					
@@ -58,6 +60,8 @@ public class Semantico extends DepthFirstAdapter {
 					
 				}
 				
+				scope_number++;
+				
 			}
 			
 			System.out.print('\n');
@@ -75,8 +79,7 @@ public class Semantico extends DepthFirstAdapter {
 		return temp;
 	}
 
-	public boolean check_id_call_exp(PExp node, String func_arg)
-	{
+	public boolean check_id_call_exp(PExp node, String func_arg) {
 		LinkedHashMap<Integer, Simbolo> tabela;
 		
 		AAIdCallExp id_call = (AAIdCallExp) node;
@@ -108,12 +111,9 @@ public class Semantico extends DepthFirstAdapter {
 				String nome_classe = simbolo.getTipo();
 				int pos_classe = hash(nome_classe);
 				
-				if (class_hash.containsKey(pos_classe))
-				{
+				if (class_hash.containsKey(pos_classe)) {
 					tabela = class_hash.get(pos_classe).getFirst();
-				}
-				else
-				{
+				} else {
 					System.out.println(nome_classe + "não é uma classe");
 					return false;
 				}
