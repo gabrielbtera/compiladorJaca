@@ -32,15 +32,21 @@ public class Semantico extends DepthFirstAdapter {
 	public boolean check_id_call_exp(PExp node, String func_arg)
 	{
 		LinkedHashMap<Integer, Simbolo> tabela;
+		
 		AAIdCallExp id_call = (AAIdCallExp) node;
 		String nome = id_call.getDir().toString();
 		int pos = hash(nome);
+		
 		if (id_call.getEsq() != null)
 		{
+			
 			Iterator<LinkedHashMap<Integer, Simbolo>> it = table.descendingIterator();
+			
 			String nome_id = id_call.getEsq().toString();
 			int pos_id = hash(nome_id);
+			
 			Simbolo simbolo = null;
+			
 			while (it.hasNext())
 			{
 				tabela = (LinkedHashMap<Integer, Simbolo>) it.next();
@@ -51,10 +57,12 @@ public class Semantico extends DepthFirstAdapter {
 					break;
 				}
 			}
+			
 			if (simbolo != null)
 			{
 				String nome_classe = simbolo.getTipo();
 				int pos_classe = hash(nome_classe);
+				
 				if (class_hash.containsKey(pos_classe))
 				{
 					tabela = class_hash.get(pos_classe).getFirst();
@@ -75,6 +83,7 @@ public class Semantico extends DepthFirstAdapter {
 		{
 			tabela = table.getFirst();
 		}
+		
 		if (tabela.containsKey(pos))
 		{
 			if (tabela.get(pos).getValor().equals(func_arg))
@@ -86,6 +95,7 @@ public class Semantico extends DepthFirstAdapter {
 				return true;
 			}
 		}
+		
 		return false;
 	}
 
