@@ -11,7 +11,6 @@ import java.util.Iterator;
 import jaca.analysis.*;
 import jaca.node.*;
 
-
 public class Semantico extends DepthFirstAdapter {
 
 	LinkedHashMap<Integer, LinkedList<LinkedHashMap<Integer, Simbolo>>> class_hash = new LinkedHashMap<Integer, LinkedList<LinkedHashMap<Integer, Simbolo>>>();
@@ -44,7 +43,6 @@ public class Semantico extends DepthFirstAdapter {
 			while (it.hasNext())
 			{
 				tabela = (LinkedHashMap<Integer, Simbolo>) it.next();
-				
 				if (tabela.containsKey(pos_id))
 				{
 					simbolo = tabela.get(pos_id);
@@ -81,7 +79,7 @@ public class Semantico extends DepthFirstAdapter {
 			{
 				return true;
 			}
-			else if (tabela.get(pos).getValor().equals("L") && (func_arg.equals("int ") || func_arg.equals("bool ") || func_arg.equals("real ")))
+			else if (tabela.get(pos).getValor().equals("R") && (func_arg.equals("int ") || func_arg.equals("bool ") || func_arg.equals("real ")))
 			{
 				return true;
 			}
@@ -129,23 +127,22 @@ public class Semantico extends DepthFirstAdapter {
 	@Override
 	public void inAAProgramaPrograma(AAProgramaPrograma node)
 	{
-		//Adicionar a classe _ES e os seus métodos no início do programa
+		//Adicionar a classe _IO e os seus métodos no início do programa
 		String nome = "_ES ";
 		int pos = hash(nome);
 		class_hash.put(pos, new LinkedList<LinkedHashMap<Integer, Simbolo>>());
 		table = (LinkedList<LinkedHashMap<Integer, Simbolo>>) class_hash.get(pos);
 		table.add(new LinkedHashMap<Integer, Simbolo>());
-		
 		pos = hash("imprime ");
-		Simbolo sym_print = new Simbolo("func", "imprime ", "I", new ArrayList<String>());
+		Simbolo sym_print = new Simbolo("func", "imprime ", "P", new ArrayList<String>());
 		sym_print.addParametro("Dummy");
 		table.getLast().put(pos, sym_print);
-		
 		pos = hash("lê ");
-		table.getLast().put(pos, new Simbolo("func", "lê ", "L", new ArrayList<String>()));
-		System.out.println("Classe _ES importada");
+		table.getLast().put(pos, new Simbolo("func", "lê ", "R", new ArrayList<String>()));
+		System.out.println("Classe " + nome +  " importada");
+		
 	}
-	
+
 	@Override
 	public void outAARelacaoRelacao(AARelacaoRelacao node)
 	{
@@ -162,6 +159,7 @@ public class Semantico extends DepthFirstAdapter {
 			familia.get(pos).add(pai);
 		}
 	}
+
 	@Override
 	public void inAADefClasseDefClasse(AADefClasseDefClasse node)
 	{
@@ -196,13 +194,12 @@ public class Semantico extends DepthFirstAdapter {
 			}
 		}
 	}
-	
+
 	@Override
 	public void outAAIdExp(AAIdExp node)
 	{
 		Iterator<LinkedHashMap<Integer, Simbolo>> it = table.descendingIterator();
 		int pos = hash(node.toString());
-		
 		while (it.hasNext())
 		{
 			LinkedHashMap<Integer, Simbolo> tabela = (LinkedHashMap<Integer, Simbolo>) it.next();
@@ -219,14 +216,12 @@ public class Semantico extends DepthFirstAdapter {
 					default:
 						break;
 				}
-				
 				return;
 			}
 		}
-		
 		System.out.println(node.toString() + "não encontrado");
 	}
-	
+
 	@Override
 	public void caseAACallComando(AACallComando node)
 	{
@@ -266,7 +261,7 @@ public class Semantico extends DepthFirstAdapter {
 		}
 		outAACallComando(node);
 	}
-	
+
 	@Override
 	public void caseAAIdCallExp(AAIdCallExp node)
 	{
@@ -307,7 +302,7 @@ public class Semantico extends DepthFirstAdapter {
 		}
 		outAAIdCallExp(node);
 	}
-	
+
 	@Override
 	public void outAAIdCallExp(AAIdCallExp node)
 	{
@@ -317,10 +312,10 @@ public class Semantico extends DepthFirstAdapter {
 		}
 		else if (node.getDir() instanceof AABooleanoExp)
 		{
-			node.replaceBy(new ABoolTipoPrimitivo());
+			node.replaceBy(new AABooleanoExp());
 		}
 	}
-	
+
 	@Override
 	public void outAAChamadaExp(AAChamadaExp node)
 	{
@@ -350,11 +345,8 @@ public class Semantico extends DepthFirstAdapter {
 			{
 				valor = func.getTipo();
 			}
-			
-			System.out.println("============\n" + valor + "\n=============");
-			if (valor.equals("I"))
+			if (valor.equals("P"))
 			{
-				
 				if (len_copy != 1)
 				{
 					System.out.println(nome + "recebe apenas 1 parâmetro");
@@ -365,7 +357,7 @@ public class Semantico extends DepthFirstAdapter {
 				}
 				return;
 			}
-			else if (valor.equals("L"))
+			else if (valor.equals("R"))
 			{
 				if (len_copy != 0)
 				{
@@ -373,7 +365,6 @@ public class Semantico extends DepthFirstAdapter {
 				}
 				return;
 			}
-			
 			int len_par = func.numParametros();
 			if (len_copy != len_par)
 			{
@@ -429,7 +420,88 @@ public class Semantico extends DepthFirstAdapter {
 			System.out.println("Função " + nome + "não encontrada");
 		}
 	}
-	
+
+	@Override
+	public void caseAAChamadaExp(AAChamadaExp node)
+	{
+		inAAChamadaExp(node);
+		LinkedList<LinkedHashMap<Integer, Simbolo>> temp = null;
+        List<PExp> copy = new ArrayList<PExp>(node.getDir());
+		if (copy.size() > 0)
+		{
+			temp = temp_table;
+			temp_table = null;
+		}
+        for(PExp e : copy)
+        {
+			e.apply(this);
+		}
+		if (temp != null)
+		{
+			temp_table = temp;
+		}
+		outAAChamadaExp(node);
+	}
+
+	@Override
+	public void caseAAIdAtribExp(AAIdAtribExp node)
+	{
+		inAAIdAtribExp(node);
+		outAAIdAtribExp(node);
+	}
+
+	@Override
+	public void outAAIdAtribExp(AAIdAtribExp node)
+	{
+		String nome = ((AAIdExp) node.getEsq()).toString();
+		Iterator<LinkedHashMap<Integer, Simbolo>> it = table.descendingIterator();
+		int pos = hash(nome);
+		while (it.hasNext())
+		{
+			LinkedHashMap<Integer, Simbolo> tabela = (LinkedHashMap<Integer, Simbolo>) it.next();
+			if (tabela.containsKey(pos))
+			{
+				String tipo = tabela.get(pos).getTipo();
+				pos = hash(tipo);
+				if (class_hash.containsKey(pos))
+				{
+					LinkedHashMap<Integer, Simbolo> temp_table = class_hash.get(pos).getLast();
+					pos = hash(node.getDir().toString());
+					if (temp_table.containsKey(pos))
+					{
+						Simbolo simbolo = temp_table.get(pos);
+						switch (simbolo.getTipo()) {
+							case "bool ":
+								node.replaceBy(new AABooleanoExp());
+								break;
+							case "int ":
+								node.replaceBy(new AANumeroExp());
+								break;
+							case "real ":
+								node.replaceBy(new AANumeroExp());
+								break;
+							default:
+								break;
+						}
+					}
+					return;
+				}
+				else
+				{
+					System.out.println("Classe não encontrada");
+				}
+			}
+		}
+		System.out.println("Não declarado");
+	}
+
+	@Override
+	public void caseAAPinicializacaoPinicializacao(AAPinicializacaoPinicializacao node)
+	{
+		inAAPinicializacaoPinicializacao(node);
+        outAAPinicializacaoPinicializacao(node);
+	}
+
 	@Override
 	public void caseAADecConsDec(AADecConsDec node)
 	{
@@ -451,7 +523,7 @@ public class Semantico extends DepthFirstAdapter {
 			table.getLast().put(pos, novo);
         }
 	}
-	
+
 	@Override
 	public void caseAADecVarDec(AADecVarDec node)
 	{
@@ -471,7 +543,7 @@ public class Semantico extends DepthFirstAdapter {
 			table.getLast().put(pos, new Simbolo(tipo, nome_val[0] + " "));
         }
 	}
-	
+
 	@Override
 	public void caseAADecObjDec(AADecObjDec node)
 	{
@@ -499,7 +571,7 @@ public class Semantico extends DepthFirstAdapter {
 			System.out.println("A classe " + tipo + "não existe");
 		}
 	}
-	
+
 	@Override
 	public void inAADecFuncaoComDec2(AADecFuncaoComDec2 node)
 	{
@@ -851,6 +923,4 @@ public class Semantico extends DepthFirstAdapter {
 			System.out.println("A expressão " + node.toString() + "deve ter como resultado um booleano!");
 	}
 
-
 }
-

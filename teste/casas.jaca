@@ -44,9 +44,7 @@ início
         c.setPiso(piso);
         
 
-        { interface.imprime(c.getTelhado());
-        interface.imprime(c.getPiso());
-        interface.imprime(c.getMedida()); } 
+  
 
 
 

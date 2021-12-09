@@ -27,8 +27,10 @@ public class Main {
 
 			Start tree = p.parse();
    			tree.apply(new ASTPrinter());
-   			tree.apply(new ASTDisplay());
+   			//tree.apply(new ASTDisplay());
             tree.apply(new Semantico());
+            System.out.println(new Semantico().table);
+            
 		}
 		catch(Exception e)
 		{

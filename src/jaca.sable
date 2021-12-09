@@ -273,7 +273,7 @@ Abstract Syntax Tree
     dec2 =
       {a_dec_procedimento} [esq]:exp [mid]:parametro* |
       {a_dec_procedimento_com} [esq]:exp [mid]:parametro* [dir]:comando |
-      {a_dec_funcao} [es]:tipo [esqn]:exp [mid]:parametro* |
+      {a_dec_funcao} [esq]:tipo [esqn]:exp [mid]:parametro* |
       {a_dec_funcao_com} [esq]:tipo [esqn]:exp [mid]:parametro* [dir]:exp;
     parametro =
       {parametro} tipo identificador;
