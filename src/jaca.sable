@@ -327,5 +327,4 @@ Abstract Syntax Tree
   booleano =
   {true} verdade |
   {false} falso;
-      
-      
+  

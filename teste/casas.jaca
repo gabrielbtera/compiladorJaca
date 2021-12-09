@@ -42,10 +42,8 @@ início
         
         c.setTelhado(telhado);
         c.setPiso(piso);
-        
-
-  
-
+        interface.imprime(verdade);
+     
 
 
 
