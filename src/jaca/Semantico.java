@@ -135,7 +135,7 @@ public class Semantico extends DepthFirstAdapter {
 			{
 				return true;
 			}
-			else if (tabela.get(pos).getValor().equals("R") && (func_arg.equals("int ") || func_arg.equals("bool ") || func_arg.equals("real ")))
+			else if (tabela.get(pos).getValor().equals("R") && (func_arg.equals("bool ") || func_arg.equals("real ")))
 			{
 				return true;
 			}
@@ -449,7 +449,7 @@ public class Semantico extends DepthFirstAdapter {
 				{
 					continue;
 				}
-				else if ((func.getParametro(i).equals("int") || func.getParametro(i).equals("real")) &&
+				else if (func.getParametro(i).equals("real") &&
 					copy.get(i) instanceof AANumeroExp)
 				{
 					continue;
@@ -477,7 +477,7 @@ public class Semantico extends DepthFirstAdapter {
 			}
 			if (func.getTipo().equals("func"))
 			{
-				if (func.getValor().equals("int ") || func.getValor().equals("real "))
+				if (func.getValor().equals("real "))
 				{
 					node.replaceBy(new AANumeroExp());
 				}
@@ -545,9 +545,6 @@ public class Semantico extends DepthFirstAdapter {
 						switch (simbolo.getTipo()) {
 							case "bool ":
 								node.replaceBy(new AABooleanoExp());
-								break;
-							case "int ":
-								node.replaceBy(new AANumeroExp());
 								break;
 							case "real ":
 								node.replaceBy(new AANumeroExp());
@@ -840,7 +837,7 @@ public class Semantico extends DepthFirstAdapter {
 							System.out.println(((AAIdExp) node.getDir()).toString() + tipo);
 						}
 					}
-					else if ((tipo.equals("int ") || tipo.equals("real ")) && !(node.getDir() instanceof AANumeroExp))
+					else if (tipo.equals("real ") && !(node.getDir() instanceof AANumeroExp))
 					{
 						System.out.println("O lado direito da operação não é um número");
 					}
