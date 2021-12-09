@@ -5,6 +5,7 @@ import java.util.List;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import java.util.Iterator;
 
@@ -17,7 +18,53 @@ public class Semantico extends DepthFirstAdapter {
 	LinkedHashMap<Integer, ArrayList<String>> familia = new LinkedHashMap<Integer, ArrayList<String>>();
 	LinkedList<LinkedHashMap<Integer, Simbolo>> table;
 	LinkedList<LinkedHashMap<Integer, Simbolo>> temp_table = null;
+	Boolean toPrintTable = true;
+	
+	public void setPrint() {
+		this.toPrintTable = !this.toPrintTable;
+	}
+	
+	private void printSymbolTable() {
+		
+		if (this.toPrintTable) {
+			
+			System.out.print('\n');
+			
+			String identation = "  ";
+			int counter = table.size();
+			
+			for (LinkedHashMap<Integer, Simbolo> scope : this.table) {
+				System.out.println('\n' + identation + "\t\t" + "TABLE");
+				counter--;
+				for (Map.Entry<Integer, Simbolo> symbol : scope.entrySet()) {
+					
+					System.out.println(identation
+							+ "________________________________________\n");
 
+					System.out.println('\t' + identation + symbol.getValue().getTipo()
+							+ " | " + symbol.getValue().getNome()
+							+ " | " + symbol.getValue().getValor());
+					
+				
+				}
+				
+				if(counter > 0) {
+					
+					identation = identation + "\t";
+					
+					System.out.println("\n" + identation + "\t\t | ");
+					System.out.println(identation + "\t\t | ");
+					System.out.println(identation + "\t\t\\ /");
+					
+				}
+				
+			}
+			
+			System.out.print('\n');
+			
+		}
+	}
+	
 	public int hash(String key)
 	{
 		int temp = 0;
@@ -137,7 +184,7 @@ public class Semantico extends DepthFirstAdapter {
 	@Override
 	public void inAAProgramaPrograma(AAProgramaPrograma node)
 	{
-		//Adicionar a classe _IO e os seus métodos no início do programa
+		//Adicionar a classe _ES e os seus métodos no início do programa
 		String nome = "_ES ";
 		int pos = hash(nome);
 		class_hash.put(pos, new LinkedList<LinkedHashMap<Integer, Simbolo>>());
@@ -517,6 +564,8 @@ public class Semantico extends DepthFirstAdapter {
 	{
 		inAADecConsDec(node);
 		outAADecConsDec(node);
+		
+		this.printSymbolTable();
 	}
 
 	@Override
@@ -539,6 +588,8 @@ public class Semantico extends DepthFirstAdapter {
 	{
 		inAADecVarDec(node);
 		outAADecVarDec(node);
+		
+		this.printSymbolTable();
 	}
 
 	@Override
@@ -559,6 +610,8 @@ public class Semantico extends DepthFirstAdapter {
 	{
 		inAADecObjDec(node);
 		outAADecObjDec(node);
+		
+		this.printSymbolTable();
 	}
 
 	@Override
@@ -612,11 +665,14 @@ public class Semantico extends DepthFirstAdapter {
 	public void caseAADecFuncaoComDec2(AADecFuncaoComDec2 node)
 	{
 		inAADecFuncaoComDec2(node);
+		
 		if (node.getDir() != null)
 		{
 			node.getDir().apply(this);
 		}
+		
 		outAADecFuncaoComDec2(node);
+		this.printSymbolTable();
 	}
 
 	@Override
@@ -648,11 +704,15 @@ public class Semantico extends DepthFirstAdapter {
 	public void caseAADecProcedimentoComDec2(AADecProcedimentoComDec2 node)
 	{
 		inAADecProcedimentoComDec2(node);
+		this.printSymbolTable();
+		
 		if (node.getDir() != null)
 		{
 			node.getDir().apply(this);
 		}
+		
 		outAADecProcedimentoComDec2(node);
+		this.printSymbolTable();
 	}
 
 	@Override
@@ -661,7 +721,10 @@ public class Semantico extends DepthFirstAdapter {
 		String nome = node.getEsq().toString();
 		int pos = hash(nome);
 		table.getLast().put(pos, new Simbolo("bloco", nome));
+		
+		this.printSymbolTable();
 		System.out.println("Abriu um novo bloco");
+		
 		table.add(new LinkedHashMap<Integer, Simbolo>());
 	}
 
@@ -669,6 +732,7 @@ public class Semantico extends DepthFirstAdapter {
 	public void outAABlocoComando(AABlocoComando node)
 	{
 		table.removeLast();
+		this.printSymbolTable();
 	}
 
 	@Override
