@@ -18,7 +18,7 @@ public class Semantico extends DepthFirstAdapter {
 	LinkedHashMap<Integer, ArrayList<String>> familia = new LinkedHashMap<Integer, ArrayList<String>>();
 	LinkedList<LinkedHashMap<Integer, Simbolo>> table;
 	LinkedList<LinkedHashMap<Integer, Simbolo>> temp_table = null;
-	Boolean toPrintTable = true;
+	private Boolean toPrintTable = true;
 	
 	public void setPrint() {
 		this.toPrintTable = !this.toPrintTable;
@@ -187,15 +187,24 @@ public class Semantico extends DepthFirstAdapter {
 		//Adicionar a classe _ES e os seus métodos no início do programa
 		String nome = "_ES ";
 		int pos = hash(nome);
+		
 		class_hash.put(pos, new LinkedList<LinkedHashMap<Integer, Simbolo>>());
+		
 		table = (LinkedList<LinkedHashMap<Integer, Simbolo>>) class_hash.get(pos);
 		table.add(new LinkedHashMap<Integer, Simbolo>());
+		
 		pos = hash("imprime ");
 		Simbolo sym_print = new Simbolo("func", "imprime ", "P", new ArrayList<String>());
 		sym_print.addParametro("Dummy");
 		table.getLast().put(pos, sym_print);
+		
+		this.printSymbolTable();
+		
 		pos = hash("lê ");
 		table.getLast().put(pos, new Simbolo("func", "lê ", "R", new ArrayList<String>()));
+		
+		this.printSymbolTable();
+		
 		System.out.println("Classe " + nome +  " importada");
 		
 	}
@@ -206,14 +215,17 @@ public class Semantico extends DepthFirstAdapter {
 		String filha = node.getEsq().toString();
 		String pai = node.getDir().toString();
 		int pos = hash(filha);
-		if (familia.containsKey(pos))
-		{
+		
+		if (familia.containsKey(pos)) {
 			familia.get(pos).add(pai);
-		}
-		else
-		{
+		} else {
+			
 			familia.put(pos, new ArrayList<String>());
+			
+			this.printSymbolTable();
+			
 			familia.get(pos).add(pai);
+		
 		}
 	}
 
@@ -242,6 +254,9 @@ public class Semantico extends DepthFirstAdapter {
 						nome = atual.getNome();
 						pos = hash(nome);
 						table.getFirst().put(pos, atual);
+						
+						this.printSymbolTable();
+						
 					}
 				}
 				else
@@ -573,13 +588,15 @@ public class Semantico extends DepthFirstAdapter {
 	{
 		String tipo = node.getEsq().toString();
 		List<PPinicializacao> copy = new ArrayList<PPinicializacao>(node.getDir());
-		for (int i = 0; i < copy.size(); i++)
-        {
+		
+		for (int i = 0; i < copy.size(); i++) {
 			String[] nome_val = copy.get(i).toString().split("\\s+");
 			int pos = hash(nome_val[0] + " ");
 			Simbolo novo = new Simbolo(tipo, nome_val[0] + " ", nome_val[1] + " ");
 			novo.setCons(true);
 			table.getLast().put(pos, novo);
+			
+			this.printSymbolTable();
         }
 	}
 
@@ -602,6 +619,8 @@ public class Semantico extends DepthFirstAdapter {
 			String[] nome_val = copy.get(i).toString().split("\\s+");
 			int pos = hash(nome_val[0] + " ");
 			table.getLast().put(pos, new Simbolo(tipo, nome_val[0] + " "));
+			
+			this.printSymbolTable();
         }
 	}
 
@@ -627,6 +646,8 @@ public class Semantico extends DepthFirstAdapter {
 				String[] nome_val = copy.get(i).toString().split("\\s+");
 				pos = hash(nome_val[0] + " ");
 				table.getLast().put(pos, new Simbolo(tipo, nome_val[0] + " "));
+				
+				this.printSymbolTable();
 			}
 		}
 		else
@@ -636,29 +657,38 @@ public class Semantico extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void inAADecFuncaoComDec2(AADecFuncaoComDec2 node)
-	{
+	public void inAADecFuncaoComDec2(AADecFuncaoComDec2 node) {
 		String nome = node.getEsqn().toString();
 		String valor = node.getEsq().toString();
 		int pos = hash(nome);
+		
 		System.out.println("Abriu uma nova função");
+		
 		table.getLast().put(pos, new Simbolo("func", nome, valor, new ArrayList<String>()));
+		this.printSymbolTable();
+		
 		Simbolo func = table.getLast().get(pos);
 		table.add(new LinkedHashMap<Integer, Simbolo>());
 		List<PParametro> copy = new ArrayList<PParametro>(node.getMid());
-		for (int i = 0; i < copy.size(); i++)
-        {
+		
+		for (int i = 0; i < copy.size(); i++) {
+			
 			String[] nome_val = copy.get(i).toString().split("\\s+");
 			pos = hash(nome_val[1] + " ");
+			
 			table.getLast().put(pos, new Simbolo(nome_val[0] + " ", nome_val[1] + " "));
+			
+			this.printSymbolTable();
+			
 			func.addParametro(nome_val[0]);
-        }
+        
+		}
 	}
 
 	@Override
-	public void outAADecFuncaoComDec2(AADecFuncaoComDec2 node)
-	{
+	public void outAADecFuncaoComDec2(AADecFuncaoComDec2 node) {
 		table.removeLast();
+		this.printSymbolTable();
 	}
 
 	@Override
@@ -672,7 +702,7 @@ public class Semantico extends DepthFirstAdapter {
 		}
 		
 		outAADecFuncaoComDec2(node);
-		this.printSymbolTable();
+		
 	}
 
 	@Override
@@ -681,6 +711,9 @@ public class Semantico extends DepthFirstAdapter {
 		String nome = node.getEsq().toString();
 		int pos = hash(nome);
 		table.getLast().put(pos, new Simbolo("procedimento", nome, new ArrayList<String>()));
+		
+		this.printSymbolTable();
+		
 		Simbolo proc = table.getLast().get(pos);
 		System.out.println("Abriu um novo procedimento");
 		table.add(new LinkedHashMap<Integer, Simbolo>());
@@ -690,6 +723,9 @@ public class Semantico extends DepthFirstAdapter {
 			String[] nome_val = copy.get(i).toString().split("\\s+");
 			pos = hash(nome_val[1] + " ");
 			table.getLast().put(pos, new Simbolo(nome_val[0] + " ", nome_val[1] + " "));
+			
+			this.printSymbolTable();
+			
 			proc.addParametro(nome_val[0]);
 		}
 	}
@@ -741,6 +777,9 @@ public class Semantico extends DepthFirstAdapter {
 		String nome = node.getEsq().toString();
 		int pos = hash(nome);
 		table.getLast().put(pos, new Simbolo("bloco_exp", nome));
+		
+		this.printSymbolTable();
+		
 		System.out.println("Abriu um novo bloco de exp");
 		table.add(new LinkedHashMap<Integer, Simbolo>());
 	}
