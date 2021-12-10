@@ -221,9 +221,6 @@ public class Semantico extends DepthFirstAdapter {
 		} else {
 			
 			familia.put(pos, new ArrayList<String>());
-			
-			this.printSymbolTable();
-			
 			familia.get(pos).add(pai);
 		
 		}
@@ -601,9 +598,7 @@ public class Semantico extends DepthFirstAdapter {
 	public void caseAADecVarDec(AADecVarDec node)
 	{
 		inAADecVarDec(node);
-		outAADecVarDec(node);
-		
-		this.printSymbolTable();
+		outAADecVarDec(node);	
 	}
 
 	@Override
@@ -626,8 +621,6 @@ public class Semantico extends DepthFirstAdapter {
 	{
 		inAADecObjDec(node);
 		outAADecObjDec(node);
-		
-		this.printSymbolTable();
 	}
 
 	@Override
@@ -676,7 +669,7 @@ public class Semantico extends DepthFirstAdapter {
 			table.getLast().put(pos, new Simbolo(nome_val[0] + " ", nome_val[1] + " "));
 			
 			this.printSymbolTable();
-			
+	
 			func.addParametro(nome_val[0]);
         
 		}
@@ -685,7 +678,7 @@ public class Semantico extends DepthFirstAdapter {
 	@Override
 	public void outAADecFuncaoComDec2(AADecFuncaoComDec2 node) {
 		table.removeLast();
-		this.printSymbolTable();
+	
 	}
 
 	@Override
@@ -737,7 +730,6 @@ public class Semantico extends DepthFirstAdapter {
 	public void caseAADecProcedimentoComDec2(AADecProcedimentoComDec2 node)
 	{
 		inAADecProcedimentoComDec2(node);
-		this.printSymbolTable();
 		
 		if (node.getDir() != null)
 		{
@@ -745,7 +737,7 @@ public class Semantico extends DepthFirstAdapter {
 		}
 		
 		outAADecProcedimentoComDec2(node);
-		this.printSymbolTable();
+		
 	}
 
 	@Override
@@ -948,6 +940,20 @@ public class Semantico extends DepthFirstAdapter {
 		else
 		{
 			System.out.println("Erro semântico de menor que em " + node.toString());
+		}
+	}
+	
+	@Override
+	public void outAAMenorIgualExp(AAMenorIgualExp node)
+	{
+		if (node.getEsq() instanceof AANumeroExp &&
+			node.getDir() instanceof AANumeroExp)
+		{
+			node.replaceBy(new AABooleanoExp());
+		}
+		else
+		{
+			System.out.println("Erro semântico de menor/igual que em " + node.toString());
 		}
 	}
 

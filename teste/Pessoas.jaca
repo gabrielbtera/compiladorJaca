@@ -6,11 +6,11 @@ início
     var real id1;
     var real CPF;
 
-    função real getId () id
+    função real getId () id1
     
     procedimento setId (real novo_id)
     início 
-        id := novo_id;
+        id1 := novo_id;
     fim
 
     procedimento setCPF (real valor)

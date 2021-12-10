@@ -4,8 +4,8 @@ classe _Produtos & classe _Cereais filha da classe _Produtos;
 classe _Produtos
 início
     var real ab1;
-    var real codigo;
-
+    var real codigo; 
+    var real preço;
     procedimento setPreço (real novo_preço)
         preço := novo_preço;
     
@@ -52,14 +52,14 @@ início
 
     >>> procedimento principal()
     início
-        objeto _Produtos aux;
+        
         var real flag;
         var real opçao;
-
+        var real preço;
+        var real codigo;
         # faz a leitura da flag
         flag := interface.lê();
         
-
         enquanto (!(flag == -1,0))
         início
             # seleciona uma opção.
@@ -68,15 +68,14 @@ início
             # faz a leitura dos dados
             preço := interface.lê();
             codigo := interface.lê();
-        
             
             se (opçao == 1,0) 
             início
                 objeto _Laticínios laticinios;
-                laticinios.setPreço(preço);
-                laticinios.setCodigo(codigo);
+                laticinios.setPreço(3,0);
+                laticinios.setCodigo(1,0);
                 laticinios.setDesconto();
-                aux := laticinios;
+              
             fim
 
             se (opçao == 2,0)
@@ -85,17 +84,8 @@ início
                 c.setPreço(preço);
                 c.setCodigo(codigo);
                 c.setDesconto();
-                aux := c;
 
             fim
-            
-            # verifica se aux foi inicializada ou não.
-            se (opçao == 2,0 ou opçao == 1,0)
-            início
-                interface.imprime(aux.getCodigo());
-                interface.imprime(aux.getPreço());
-            fim
-            senão interface.imprime(-1,0);
             
             # deseja continuar ou não
             flag := interface.lê();
